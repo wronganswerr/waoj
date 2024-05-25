@@ -86,3 +86,6 @@ probelm
 1.使用ws搭建一个聊天室页面 (实时通讯)
 2.后端完成chat app的基本功能实现
 3.django自带的wsgi asgi 是否放弃 转而使用Gunicorn管理服务状态（抛弃宝塔？或者宝塔已经实现）
+
+
+scp -r dist root@wongansweroj.online:/home/ojfront/dist
