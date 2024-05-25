@@ -1,18 +1,25 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+  <div class="bottom">
+    <img :src="url" alt="loding img failed" />
   </div>
 </template>
-
-<script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
-
-@Options({
-  components: {
-    HelloWorld,
-  },
-})
-export default class HomeView extends Vue {}
+<!-- 随机图片 ../assets/1.jpg -->
+<script setup lang="ts">
+import { onMounted, ref } from "vue";
+const url = ref("");
+onMounted(async () => {
+  url.value = require("../assets/" + "1.jpg");
+});
 </script>
+<style scoped>
+.bottom {
+  height: 1000px;
+  width: 100%;
+  /* overflow: hidden; */
+}
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+</style>
