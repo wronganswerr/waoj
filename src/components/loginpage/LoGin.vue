@@ -72,10 +72,12 @@ const chlicklogin = () => {
         // 登录失败则清空内容;
         accout.value = "";
         password.value = "";
+        alert("用户名或者密码错误");
       }
     })
     .catch((error) => {
-      console.log(error);
+      // console.log(error);
+      alert("服务器错误 " + error);
     });
 };
 </script>
