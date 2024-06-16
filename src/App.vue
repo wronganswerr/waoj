@@ -70,6 +70,11 @@
   <div id="buttom">
     <router-view />
   </div>
+  <div id="foot">
+    <el-link href="https://beian.miit.gov.cn/" target="_blank"
+      >浙ICP备2024093265号-1</el-link
+    >
+  </div>
 </template>
 <script lang="ts" setup>
 import { useStore } from "vuex";
@@ -87,6 +92,7 @@ router.afterEach((to) => {
   selectedkeys.value = [to.path];
 });
 onMounted(() => {
+  document.title = "个人技术学习-WAOJ";
   //组件挂载完后执行
   let info = localStorage.getItem("info"); //取出字符串
   // console.log(info);
@@ -139,5 +145,9 @@ const chlicklogout = () => {
 }
 .app {
   height: 100%;
+}
+#foot {
+  text-align: center;
+  bottom: 0px;
 }
 </style>
