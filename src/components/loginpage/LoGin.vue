@@ -48,7 +48,7 @@ const chlicklogin = () => {
   };
   axios
     .post(
-      store.state.behindip.onlineip + "/wronganswer/login/",
+      store.state.behindip.onlineip + store.state.behindip.user_login,
       JSON.stringify(data),
       config
     )

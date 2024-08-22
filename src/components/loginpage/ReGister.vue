@@ -50,7 +50,7 @@ const chlick = () => {
 
   axios
     .post(
-      store.state.behindip.onlineip + "/wronganswer/register/",
+      store.state.behindip.onlineip + store.state.behindip.user_register,
       JSON.stringify(data),
       config
     )
