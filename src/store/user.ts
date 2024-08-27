@@ -1,32 +1,44 @@
-import { StoreOptions } from "vuex";
+// src/store/user.ts
+import { Module } from "vuex";
 
-// actions 调用mutations 支持异步
+export interface UserState {
+  name: string;
+  role: number;
+  token: string;
+  user_id: number;
+}
 
-// mutations 更新变量
+const state: UserState = {
+  name: "",
+  role: 0,
+  token: "",
+  user_id: 0,
+};
+
+const mutations = {
+  setUserInfo(
+    state: UserState,
+    userInfo: { name: string; role: number; token: string; user_id: number }
+  ) {
+    state.name = userInfo.name;
+    state.role = userInfo.role;
+    state.token = userInfo.token;
+    state.user_id = userInfo.user_id;
+  },
+};
+
+const actions = {
+  getuserinfo(
+    { commit },
+    userInfo: { name: string; role: number; token: string; user_id: number }
+  ) {
+    commit("setUserInfo", userInfo);
+  },
+};
+
 export default {
   namespaced: true,
-  state: () => ({
-    user: {
-      username: "tourist",
-      id: 0,
-      userrole: -1,
-    },
-  }),
-  actions: {
-    getuserinfo({ commit }, payload) {
-      //从远程获取登录信息（服务器）
-      commit("updatauser", payload);
-    },
-  },
-  mutations: {
-    updatauser(state, payload) {
-      // console.log("updatauser");
-      // console.log(payload);
-      // console.log(payload.username);
-      // console.log(payload.userrole);
-      state.user.username = payload.name;
-      state.user.userrole = payload.role;
-      state.user.id = payload.id;
-    },
-  },
-} as StoreOptions<any>;
+  state,
+  mutations,
+  actions,
+} as Module<UserState, any>;

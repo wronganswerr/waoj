@@ -5,31 +5,32 @@
         <p style="font-size: 20px; font-weight: 900; margin: 10px">WAOJ</p>
       </div>
       <el-menu-item index="/">
-        <router-link to="/">Home</router-link>
+        <router-link to="/" class="no-underline">Home</router-link>
       </el-menu-item>
       <el-menu-item index="/problem">
-        <router-link to="/problem">Problem</router-link>
+        <router-link to="/problem" class="no-underline">Problem</router-link>
       </el-menu-item>
       <el-menu-item index="/status">
-        <router-link to="/status">Status</router-link>
+        <router-link to="/status" class="no-underline">Status</router-link>
       </el-menu-item>
       <el-menu-item index="/contest">
-        <router-link to="/contest">Contest</router-link>
+        <router-link to="/contest" class="no-underline">Contest</router-link>
       </el-menu-item>
       <el-menu-item index="/challenge">
-        <router-link to="/challenge">Challenge</router-link>
+        <router-link to="/challenge" class="no-underline"
+          >Challenge</router-link
+        >
       </el-menu-item>
       <el-menu-item index="/chatroom">
-        <router-link to="/chatroom">ChatRoom</router-link>
+        <router-link to="/chatroom" class="no-underline">ChatRoom</router-link>
       </el-menu-item>
-      <el-menu-item
-        index="/addproblem"
-        v-if="store.state.user.user.userrole == 0"
-      >
-        <router-link to="/addproblem">Addproblem</router-link>
+      <el-menu-item index="/addproblem" v-if="store.state.user.role > 0">
+        <router-link to="/addproblem" class="no-underline"
+          >Addproblem</router-link
+        >
       </el-menu-item>
       <!-- 控制组件渲染 来展示登录的用户 -->
-      <div class="log" v-if="store.state.user.user.username == 'tourist'">
+      <div class="log" v-if="store.state.user.user_id == 0">
         <el-button type="primary" plain @click="chlicklogin">Login</el-button>
         <el-button type="primary" plain @click="chlickregister"
           >Register</el-button
@@ -37,7 +38,7 @@
       </div>
       <div class="log" v-else>
         <p style="font-size: 23px">
-          {{ store.state.user.user.username }}
+          {{ store.state.user.name }}
         </p>
         <el-button
           type="primary"
@@ -54,7 +55,7 @@
     title="LOGIN"
     center
     width="30%"
-    v-if="store.state.user.user.username == 'tourist'"
+    v-if="store.state.user.user_id == 0"
   >
     <LoGin />
   </el-dialog>
@@ -63,7 +64,7 @@
     title="REGISTER"
     center
     width="30%"
-    v-if="store.state.user.user.username == 'tourist'"
+    v-if="store.state.user.user_id == 0"
   >
     <ReGister />
   </el-dialog>
@@ -77,7 +78,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { useStore } from "vuex";
+import { createLogger, useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ref, onMounted } from "vue";
 import LoGin from "./components/loginpage/LoGin.vue";
@@ -95,7 +96,7 @@ onMounted(() => {
   document.title = "个人技术学习-WAOJ";
   //组件挂载完后执行
   let info = localStorage.getItem("info"); //取出字符串
-  // console.log(info);
+  console.log(info);
   if (info == null) return;
   store.dispatch("user/getuserinfo", JSON.parse(info as string));
 });
@@ -109,14 +110,15 @@ const chlickregister = () => {
 };
 const chlicklogout = () => {
   localStorage.clear();
-  store.dispatch(
-    "user/getuserinfo",
-    { name: "tourist", role: 1, userid: 0 }
-    // JSON.parse('{ "username": "nouser", "userrole": 1 }')
-  );
+  store.dispatch("user/getuserinfo", {
+    name: "",
+    role: 0,
+    user_id: 0,
+    token: "",
+  });
   router.push("/");
 };
-// console.log(store.state.user.username);
+// console.log(store.state.user.name);
 </script>
 <style>
 .log {
@@ -129,6 +131,7 @@ const chlicklogout = () => {
   right: 0;
   /* background-color: gray; */
 }
+
 .log p {
   margin: 0px;
 }
@@ -137,14 +140,21 @@ const chlicklogout = () => {
   /* position: relative; */
   margin-top: 8px;
   /* width: 100%; */
-  /* height: 1000px; */
-  /* min-height: 1000px; */
+  /* height: 80%; */
+  min-height: 95vh;
   /* height: 100%; */
   background-color: white;
   display: block;
 }
-.app {
-  height: 100%;
+.no-underline {
+  text-decoration: none;
+}
+
+/* .app {
+  height: 90%;
+} */
+body {
+  height: 30%;
 }
 #foot {
   text-align: center;

@@ -91,6 +91,9 @@ onMounted(() => {
       total.value = response.data.total;
       // console.log(total.value);
       // console.log(statusset.value.length);
+    })
+    .catch((err) => {
+      console.log(err);
     });
 });
 // 监听变量 或者 调用分页组件的方法
@@ -109,6 +112,9 @@ watch(nowpage, (newpage) => {
       total.value = response.data.total;
       // console.log(statusset.value.length);
       // problemslitle.value = response.problemset;
+    })
+    .catch((err) => {
+      console.log(err);
     });
 });
 const lookcode = (id: number) => {

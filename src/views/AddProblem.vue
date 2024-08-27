@@ -244,6 +244,7 @@ const upload = ref<UploadInstance>(); //指代组件？
 const fileUpload = ref(); //文件容器
 const data = ref();
 //fail改变时候调用
+
 const handleExceed: UploadProps["onExceed"] = (files) => {
   // console.log(upload.value);
   upload.value?.clearFiles();
@@ -251,6 +252,7 @@ const handleExceed: UploadProps["onExceed"] = (files) => {
   file.uid = genFileId();
   upload.value?.handleStart(file);
 };
+
 const example = ref();
 const exnum = ref(0);
 const exinput = ref("");
@@ -276,8 +278,11 @@ const delexpect = () => {
   example.value = exampletmp;
   exnum.value--;
 };
+
+// 直接上传zip文件到服务端 由服务端解压后，返回特定长度的数据
 const onchange = (file: object) => {
-  console.log(file);
+  // console.log(file);
+
   fileUpload.value = file;
   // console.log(fileUpload.value.raw);
   let zipfile = fileUpload.value.raw;
@@ -346,18 +351,18 @@ const addprobelm = () => {
     is_hide: is_hide.value,
     data: JSON.parse(JSON.stringify(data.value)),
   };
+
   console.log(problem);
   let config = {
-    headers: { "Content-Type": "multipart/json, charset=UTF-8" },
+    headers: {
+      "Content-Type": "multipart/json, charset=UTF-8",
+      Authorization: `Bearer ${store.state.user.token}`,
+    },
   };
-  //直接post json对象
-  // http://127.0.0.1:8001/wronganswer/addproblem/
-  // http://43.143.247.211:8001/wronganswer/addproblem/
-  // mongodb 单个文档大小被限制为16MB 如何绕过限制
-  // 处理大量数据时浏览器内存会爆炸
+
   axios
     .post(
-      store.state.behindip.onlineip + "/wronganswer/addproblem/",
+      `${store.state.behindip.onlineip}${store.state.behindip.add_problem}`,
       JSON.stringify(problem),
       config
     )
@@ -365,13 +370,7 @@ const addprobelm = () => {
       console.log(response);
       if (response.data.state === "OK") {
         alert("success add a problem");
-        // upload.value?.clearFiles();
-        // problemtitle.value = "";
-        // timelimit.value = 1;
-        // memorylimit.value = 256;
-        // problemmain.value = "";
-        // inputdescribe.value = "";
-        // outputdescribe.value = "";
+        // 跳转到 problem 页面
       } else {
         alert("file add a problem");
       }

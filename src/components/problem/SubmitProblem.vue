@@ -40,7 +40,7 @@ const code = ref("");
 const buts = ref(true);
 const lange = ref();
 const props = defineProps(["submitproblemid", "submitproblemtitle"]);
-const store = useStore(); //store.state.user.user.username
+const store = useStore(); //store.state.user.username
 const router = useRouter(); //跳转至提交页面
 const options = ["C++", "Python3"];
 // 内容为空时禁用
@@ -66,7 +66,7 @@ const submit = () => {
   let seconds = currentDate.getSeconds();
   let data = {
     code: code.value,
-    user_id: store.state.user.user.id,
+    user_id: store.state.user.id,
     submitwhen:
       year +
       "-" +

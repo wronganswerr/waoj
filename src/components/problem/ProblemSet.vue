@@ -25,20 +25,22 @@
         </p>
       </el-scrollbar> -->
       <div>
-        <li v-for="(i, index) in problemset" :key="index" :class="i.solve">
-          <div class="inline">{{ i.problemtitle }}</div>
+        <li v-for="(i, index) in problem_list" :key="index" :class="i.solve">
+          <div class="inline">{{ i.problem_title }}</div>
           <div class="inline">
-            <el-button type="primary" @click="looktopro(i.rid)">Look</el-button>
+            <el-button type="primary" @click="looktopro(i.problem_id)"
+              >Look</el-button
+            >
             <!-- <router-link target="_blank" to="/aproblempage">look</router-link> -->
           </div>
           <!-- 只有当前用户为管理员时显示 -->
-          <div class="inline" v-if="store.state.user.user.userrole == 0">
-            <el-button type="primary" @click="changetopro(i.rid)"
+          <div class="inline" v-if="store.state.user.role == 0">
+            <el-button type="primary" @click="changetopro(i.problem_id)"
               >Change</el-button
             >
           </div>
-          <div class="inline" v-if="store.state.user.user.userrole == 0">
-            <el-button type="primary" @click="deletetopro(i.rid, i.id)"
+          <div class="inline" v-if="store.state.user.role == 0">
+            <el-button type="primary" @click="deletetopro(i.problem_id, index)"
               >Delete</el-button
             >
           </div>
@@ -49,79 +51,85 @@
 </template>
 
 <script setup lang="ts">
+import { validateResponse } from "@/utils/utils";
 import axios from "axios";
 import { ref, onMounted, toRaw } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 const store = useStore(); //访问全局变量
-const problemset = ref();
-let solve = new Set();
-onMounted(() => {
-  let data = {
-    user_id: store.state.user.user.id,
-  };
-  let config = {
-    headers: { "Content-Type": "multipart/json, charset=UTF-8" },
-  };
-  axios
-    .post(
-      store.state.behindip.onlineip + "/wronganswer/getproblem/",
-      JSON.stringify(data),
-      config
-    )
-    .then((response) => {
-      console.log(response);
-      if (response.data.state == "Fail") {
-        alert("登录后可以查看问题");
-      }
+const problem_list = ref<ProblemInfo[]>([]);
 
-      // console.log(problemset.value);
-      // problemslitle.value = response.problemset;
-      if (store.state.user.user.userrole != -1) {
-        problemset.value = response.data.problemset;
-        for (let i = 0; i < response.data.problemset.length; i++) {
-          problemset.value[i].solve = "unsolve";
-        }
-        axios
-          .get(
-            store.state.behindip.onlineip +
-              "/wronganswer/getuserstatus?user_id=" +
-              store.state.user.user.id
-          )
-          .then((response) => {
-            // console.log(response);
-            let sta = response.data.Status; //array 取出solve的problem的id
-            // console.log(sta.length);
-            for (let i = 0; i < sta.length; i++) {
-              if (sta[i]["verdict_id"] == 0) {
-                console.log(sta[i]["problem_id"]);
-                solve.add(sta[i]["problem_id"]);
-              }
-            }
-            // console.log(solve);
-            let tmp = problemset.value;
-            for (let i = 0; i < tmp.length; i++) {
-              // console.log(toRaw(tmp[i]).rid);
-              let rid = toRaw(tmp[i]).rid;
-              console.log(rid + " " + solve.has(rid));
-              if (solve.has(rid)) {
-                // console.log(rid);
-                tmp[i].solve = "solve";
-              }
-            }
-            problemset.value = tmp;
-          });
-      }
+interface ProblemInfo {
+  problem_id: string;
+  problem_title: string;
+  solve: string;
+}
+
+onMounted(() => {
+  fetchData()
+    .then(() => {
+      console.log("fetch data finish");
+    })
+    .catch((error) => {
+      console.log(error);
     });
-  //返回所有该用户的提交，给前端处理
 });
+
+const fetchData = async () => {
+  try {
+    let config = {
+      headers: {
+        "Content-Type": "multipart/json, charset=UTF-8",
+        Authorization: `Bearer ${store.state.user.token}`,
+      },
+    };
+    const all_problem_request = axios.get(
+      `${store.state.behindip.onlineip}${store.state.behindip.get_all_problem}`,
+      config
+    );
+    const user_problem_request = axios.get(
+      `${store.state.behindip.onlineip}${store.state.behindip.get_user_problem_status}`
+    );
+
+    // 使用 Promise.all 等待两个请求都完成
+    const [result_1, result_2] = await Promise.all([
+      all_problem_request,
+      user_problem_request,
+    ]);
+    if (validateResponse(result_1)) {
+      if (validateResponse(result_2)) {
+        let payload_1 = result_1.data.content.payload;
+        let payload_2 = result_2.data.content.payload;
+        for (let i = 0; i < payload_1.problem_list.length; i++) {
+          let solve = "unslove";
+          if (payload_2.problem_list[i]) {
+            solve = "solve";
+          }
+          problem_list.value.push({
+            problem_id: payload_1.problem_list[i].problem_id,
+            problem_title: payload_1.problem_list[i].problem_title,
+            solve: solve,
+          });
+        }
+      } else {
+        // user_problem_request error just set problem list
+      }
+    } else {
+      alert("serve error");
+    }
+  } catch (error) {
+    // 处理请求错误
+    console.error("请求失败：", error);
+  }
+};
+
 const router = useRouter();
-const looktopro = (rid: string) => {
+const looktopro = (problem_id: string) => {
   window.open(
     router.resolve({
       path: "/aproblempage",
       query: {
-        rid: rid,
+        problem_id: problem_id,
       },
     }).href,
     "_blank"
@@ -129,45 +137,49 @@ const looktopro = (rid: string) => {
 };
 // 重现写一个changeproblem页面传入rid,载入数据
 // 与addproblem类似
-const changetopro = (rid: string) => {
+const changetopro = (problem_id: string) => {
   console.log("change");
   window.open(
     router.resolve({
       path: "/changeproblem",
       query: {
-        rid: rid,
+        rid: problem_id,
       },
     }).href,
     "_blank"
   );
   // router.push({ path: "/changeproblem", query: { rid: rid } });
 };
-const deletetopro = (rid: string, id: number) => {
-  console.log("delete");
+
+const deletetopro = (problem_id: string, id: number) => {
   let config = {
-    headers: { "Content-Type": "multipart/json, charset=UTF-8" },
+    headers: {
+      "Content-Type": "multipart/json, charset=UTF-8",
+      Authorization: `Bearer ${store.state.user.token}`,
+    },
   };
   let data = {
-    problemid: rid,
+    problem_id: problem_id,
   };
   // http://127.0.0.1:8001
   // http://43.143.247.211:8001/
   axios
     .post(
-      store.state.behindip.onlineip + "/wronganswer/deletetoproblem/",
+      `${store.state.behindip.onlineip}${store.state.behindip.delete_problem}`,
       JSON.stringify(data),
       config
     )
     .then((res) => {
       console.log(res);
       // 不刷新页面 更新组件
-      // console.log(problemset.value);
-      // console.log(typeof problemset.value);
-      // problemset.value.delete(id);
-      problemset.value.splice(id, 1);
-      // console.log(id);
-      problemset.value.splice(id - 1, 1);
+      problem_list.value.splice(id, 1);
+      problem_list.value.splice(id - 1, 1);
+    })
+    .catch((error) => {
+      console.log(error);
     });
+
+  // const [result1, result2] = await Promise.all([response1, response2]);
 };
 </script>
 <style scoped>
@@ -178,6 +190,7 @@ const deletetopro = (rid: string, id: number) => {
   background-color: white;
   /* border-style: solid; */
 }
+
 .infinite-list {
   /* height: 550px; */
   height: 85%;
@@ -185,6 +198,7 @@ const deletetopro = (rid: string, id: number) => {
   margin: 0;
   list-style: none;
 }
+
 .unsolve {
   display: flex;
   align-items: center;
@@ -195,6 +209,7 @@ const deletetopro = (rid: string, id: number) => {
   margin: 10px;
   color: var(--el-color-primary);
 }
+
 .solve {
   display: flex;
   align-items: center;
@@ -206,6 +221,7 @@ const deletetopro = (rid: string, id: number) => {
 
   background-color: rgb(142, 230, 142);
 }
+
 .inline {
   width: 25%;
   margin-right: 20px;

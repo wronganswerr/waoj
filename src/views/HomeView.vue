@@ -1,5 +1,6 @@
 <template>
   <div class="bottom">
+    <!-- HELLO -->
     <img :src="url" alt="loding img failed" />
   </div>
 </template>
@@ -13,8 +14,10 @@ onMounted(async () => {
 </script>
 <style scoped>
 .bottom {
-  height: 1000px;
   width: 100%;
+  /* height: 100%; */
+  height: 90vh;
+  /* background-color: black; */
   /* overflow: hidden; */
 }
 img {

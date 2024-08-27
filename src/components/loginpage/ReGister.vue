@@ -30,11 +30,14 @@
 import { ref } from "vue";
 import axios from "axios";
 import { useStore } from "vuex";
+import { validateResponse, anotherUtilityFunction } from "../../utils/utils";
+import { vLoading } from "element-plus";
 const accout = ref();
 const password = ref();
 const store = useStore();
+
 const chlick = () => {
-  //获取用户名和密码,请求服务区器登录
+  //获取用户名和密码,请求服务器登录
   // console.log(accout.value);
   // console.log(password.value);
   // axios.defaults.baseURL = "/proxy_url";
@@ -44,25 +47,31 @@ const chlick = () => {
     headers: { "Content-Type": "multipart/json, charset=UTF-8" },
   };
   let data = {
-    name: accout.value,
-    password: password.value,
+    user_name: accout.value,
+    pass_word: password.value,
   };
 
   axios
     .post(
-      store.state.behindip.onlineip + store.state.behindip.user_register,
+      `${store.state.behindip.onlineip}${store.state.behindip.user_register}`,
       JSON.stringify(data),
       config
     )
     .then((response) => {
-      if (response.data.state === "OK") {
-        console.log(response.data); //成功直接登录
-        store.dispatch("user/getuserinfo", response.data);
+      if (!validateResponse(response)) {
+        return;
+      }
+      let content = response.data.content;
+      if (content.code === 0) {
+        // console.log(response.data); //成功直接登录
+        store.dispatch("user/getuserinfo", content.payload);
         localStorage.setItem(
           "info",
           JSON.stringify({
-            role: response.data.userrole,
-            name: accout.value,
+            role: store.state.user.role,
+            name: store.state.user.name,
+            user_id: store.state.user.user_id,
+            token: store.state.user.token,
           })
         );
       } else {

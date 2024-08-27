@@ -91,8 +91,8 @@
     <el-affix style="margin-left: 10px; width: 20%" :offset="60">
       <div id="Lastsubmissions">
         <h3>Last submissions</h3>
-        <p v-if="store.state.user.user.userrole == -1">登录后查看</p>
-        <p v-else>{{ store.state.user.user.username }}</p>
+        <p v-if="store.state.user.userrole == -1">登录后查看</p>
+        <p v-else>{{ store.state.user.username }}</p>
         <!-- 你好 xxx -->
         <div>
           <el-table :data="theprosta" style="width: 100%">
@@ -115,6 +115,8 @@ import { ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import axios from "axios";
 import SubmitProblem from "@/components/problem/SubmitProblem.vue";
+import { validateResponse, anotherUtilityFunction } from "../../utils/utils";
+
 // 父组件向子组件传参？路由跳转时传参
 const route = useRoute();
 const problemid = ref("");
@@ -126,58 +128,62 @@ const inputdescribe = ref("");
 const outputdescribe = ref("");
 const example = ref();
 const theprosta = ref();
-const store = useStore(); //store.state.user.user.username
+const store = useStore(); //store.state.user.username
 // const text = ref("$a$");
-let rid = route.query.rid;
+let problem_id = route.query.problem_id;
 // console.log(route.query.rid);
 onMounted(() => {
   let config = {
     headers: { "Content-Type": "multipart/json, charset=UTF-8" },
   };
   let data = {
-    rid: rid,
+    problem_id: problem_id,
   };
-  // http://127.0.0.1:8001
-  // http://43.143.247.211:8001/
+
   axios
     .post(
-      store.state.behindip.onlineip + "/wronganswer/ridgetproblem/",
+      `${store.state.behindip.onlineip}${store.state.behindip.get_problem_detile}`,
       JSON.stringify(data),
       config
     )
-    .then((res) => {
-      //   console.log(res);
-      //   problem.value = res.data; //数据接收完成
-      //   console.log(problem.value);
-      problemid.value = res.data.rid;
-      problemtitle.value = res.data.problemtitle;
-      problemmain.value = res.data.problemmain;
-      inputdescribe.value = res.data.inputdescribe;
-      outputdescribe.value = res.data.outputdescribe;
-      timelimit.value = res.data.timelimit;
-      memorylimit.value = res.data.memorylimit;
-      example.value = res.data.example;
+    .then((response) => {
+      if (!validateResponse(response)) {
+        // 服务端错误时需要跳转至home
+        return;
+      }
+
+      let content = response.data.content;
+      let payload = content.payload;
+
+      problemid.value = payload.problem_id;
+      problemtitle.value = payload.problem_title;
+      problemmain.value = payload.problemmain;
+      inputdescribe.value = payload.inputdescribe;
+      outputdescribe.value = payload.outputdescribe;
+      timelimit.value = payload.timelimit;
+      memorylimit.value = payload.memorylimit;
+      example.value = payload.example;
     });
-  // 后端聚合搜索
-  if (store.state.user.user.userrole > -1) {
+
+  if (store.state.user.role > -1) {
     let data = {
-      user_id: store.state.user.user.id,
-      problem_id: rid?.toString(),
+      user_id: store.state.user.user_id,
+      problem_id: problem_id?.toString(),
     };
-    console.log(store.state.user.user.id);
-    console.log(data);
     axios
       .post(
-        store.state.behindip.onlineip + "/wronganswer/getuserprostatus/",
+        `${store.state.behindip.onlineip}${store.state.behindip.get_user_problem_status}`,
         JSON.stringify(data),
         config
       )
       .then((response) => {
-        console.log(response);
-        let sta = response.data.Status; //array 取出solve的problem的id
-        // console.log(sta);
-        theprosta.value = sta;
-        // 然后使用v-if进行逻辑判断
+        if (validateResponse(response)) {
+          let content = response.data.content;
+          let payload = content.payload;
+          let sta = payload.solve_id_list; //array 取出solve的problem的id
+          // console.log(sta);
+          theprosta.value = sta;
+        }
       });
   }
 });
