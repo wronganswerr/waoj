@@ -141,14 +141,11 @@
           <p>若要改变数据请全部整体上传,暂时不支持单条数据的增删改查</p>
         </el-scrollbar>
       </div>
-      <div style="text-align: center">
+      <!-- <div style="text-align: center">
         <h5>{{ mes }}</h5>
         <h5>已载入{{ datanum }}组数据</h5>
-      </div>
+      </div> -->
       <div class="tpdata">
-        <!-- 直接上传zip压缩包文件,解析成json然后提交到服务器 -->
-        <!-- accept 作用在选择文件时的默认类型，在changefile时仍要进行判断  -->
-        <!-- ref 获取组件实例 -->
         <el-upload
           ref="upload"
           class="upload-demo"
@@ -217,6 +214,7 @@ import axios from "axios";
 import JSZip from "jszip";
 
 import store from "@/store";
+import { ElLoading } from "element-plus";
 // import vue_markdown from "vue-markdown";
 const dialogFormVisible = ref(false);
 const problemtitle = ref("");
@@ -279,14 +277,14 @@ const delexpect = () => {
   exnum.value--;
 };
 
-// 直接上传zip文件到服务端 由服务端解压后，返回特定长度的数据
 const onchange = (file: object) => {
-  // console.log(file);
-
   fileUpload.value = file;
-  // console.log(fileUpload.value.raw);
   let zipfile = fileUpload.value.raw;
-  // console.log(zipfile);
+  const loading = ElLoading.service({
+    lock: true,
+    text: "LOADING DATA",
+    background: "rgba(0, 0, 0, 0.7)",
+  });
   const zipf = new JSZip();
   let indata: string[] = new Array(101);
   let outdata: string[] = new Array(101);
@@ -294,50 +292,58 @@ const onchange = (file: object) => {
   // let temp: any[] = new Array(101);
   // console.log(indata[0]);
   mes.value = "开始处理数据";
-  zipf.loadAsync(zipfile).then((zip) => {
-    // let dataa: object[];
-    let dataa: object[] = new Array(0);
-    for (let i = 1; i <= 100; i++) {
-      st[i] = 0;
-      // console.log(i.toString() + ".in");
-      let input = zip.file(i.toString() + ".in")?.async("string");
-      let output = zip.file(i.toString() + ".out")?.async("string");
-      if (input instanceof Promise && output instanceof Promise) {
-        console.log(i);
-        input
-          .then((content) => {
-            console.log(content); // 在控制台打印文件内容
-            indata[i] = content;
-            mes.value = "处理 " + i.toString() + ".in";
-          })
-          .finally(() => {
-            console.log("endin " + i.toString());
-            st[i] += 1;
-            if (st[i] == 2) {
-              dataa.push({ input: indata[i], output: outdata[i] });
-              data.value = dataa;
-              datanum.value++;
-            }
-          });
-        output
-          .then((content) => {
-            console.log(content); // 在控制台打印文件内容
-            outdata[i] = content;
-            mes.value = "处理 " + i.toString() + ".out";
-          })
-          .finally(() => {
-            console.log("endout " + i.toString());
-            st[i] += 1;
-            if (st[i] == 2) {
-              dataa.push({ input: indata[i], output: outdata[i] });
-              data.value = dataa;
-              datanum.value++;
-            }
-          });
+  zipf
+    .loadAsync(zipfile)
+    .then(async (zip) => {
+      // let dataa: object[];
+      let dataa: object[] = new Array(0);
+      for (let i = 1; i <= 100; i++) {
+        st[i] = 0;
+        // console.log(i.toString() + ".in");
+        let input = zip.file(i.toString() + ".in")?.async("string");
+        let output = zip.file(i.toString() + ".out")?.async("string");
+        if (input instanceof Promise && output instanceof Promise) {
+          // console.log(i);
+          loading.text.value = `正在加载第 ${i.toString()} 个测试数据`;
+          await input
+            .then((content) => {
+              // console.log(content); // 在控制台打印文件内容
+              indata[i] = content;
+            })
+            .finally(() => {
+              console.log("endin " + i.toString());
+              st[i] += 1;
+              if (st[i] == 2) {
+                dataa.push({ input: indata[i], output: outdata[i] });
+                data.value = dataa;
+                datanum.value++;
+              }
+            });
+          await output
+            .then((content) => {
+              // console.log(content); // 在控制台打印文件内容
+              outdata[i] = content;
+            })
+            .finally(() => {
+              // console.log("endout " + i.toString());
+              st[i] += 1;
+              if (st[i] == 2) {
+                dataa.push({ input: indata[i], output: outdata[i] });
+                data.value = dataa;
+                datanum.value++;
+              }
+            });
+        }
       }
-    }
-  });
+    })
+    .finally(() => {
+      // console.log(data);
+      setTimeout(() => {
+        loading.close();
+      }, 2000);
+    });
 };
+
 const addprobelm = () => {
   // console.log("add problem");
   let problem = {
@@ -388,6 +394,7 @@ const addprobelm = () => {
   overflow: hidden;
   display: flex;
 }
+
 .ed {
   /* height: auto; */
   width: 100%;
@@ -395,36 +402,43 @@ const addprobelm = () => {
   margin: 10px;
   /* background-color: red; */
 }
+
 .tpdata {
   background-color: white;
   margin: 10px;
-  height: 950px;
+  height: 62%;
   margin-top: 10px;
   margin-bottom: 10px;
   /* overflow: hidden; */
   /* margin-bottom: 10px; */
 }
+
 .text {
   display: "block";
   white-space: pre-line;
 }
+
 #txtontp p {
   margin: 5px;
 }
+
 #gg {
   background-color: rgb(225, 225, 225);
   margin: 10px;
   width: 30%;
   /* height: 600px; */
 }
+
 #txtontp {
   background-color: white;
   margin: 10px;
   height: 600px;
 }
+
 #addbut {
   margin: 10px;
 }
+
 #example {
   background-color: rgb(243, 246, 231);
   margin: 20px;

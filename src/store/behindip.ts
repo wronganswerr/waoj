@@ -11,6 +11,8 @@ export interface BehindIpState {
   get_problem_detile: string;
   get_user_problem_status: string;
   delete_problem: string;
+  add_problem: string;
+  upload_problem_data: string;
 }
 
 const state: BehindIpState = {
@@ -24,6 +26,8 @@ const state: BehindIpState = {
   get_problem_detile: "/problem/get_problem_detile",
   get_user_problem_status: "/problem/get_user_problem_status",
   delete_problem: "/problem/delete_problem",
+  add_problem: "/problem/add_problem",
+  upload_problem_data: "/problem/upload_problem_data",
 };
 
 export default {
