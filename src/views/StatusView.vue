@@ -52,8 +52,8 @@
           background
           layout="prev, pager, next"
           :total="total"
-          :page-size="10"
-          v-model:current-page="nowpage"
+          :page-size="page_size"
+          v-model:current-page="now_page"
         />
       </div>
     </div>
@@ -68,54 +68,59 @@
 import { ref, onMounted, watch } from "vue";
 import axios from "axios";
 import { useStore } from "vuex";
+import { validateResponse } from "@/utils/utils";
 const store = useStore();
 const statusset = ref(); //向后端发送请求 只请求前10条信息
 const total = ref(0);
-const nowpage = ref(1);
+const now_page = ref(1);
 const vis = ref(false);
 const code = ref();
 // const totalpage = ref();
-onMounted(() => {
-  // 发送axios请求 post
-  // http://127.0.0.1:8001/wronganswer/getstatus/
-  // http://43.143.247.211:8001/wronganswer/getstatus/
+const page_size = ref<number>(10);
+const user_self = ref<boolean>(false);
+
+const get_status = () => {
+  let config = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${store.state.user.token}`,
+    },
+  };
+  let data = {
+    user_self: user_self.value,
+    page_size: page_size.value,
+    now_page: now_page.value,
+  };
+  console.log(data);
   axios
-    .get(
-      store.state.behindip.onlineip +
-        "/wronganswer/getstatus?page=" +
-        nowpage.value.toString()
+    .post(
+      `${store.state.behindip.onlineip}${store.state.behindip.get_status}`,
+      JSON.stringify(data),
+      config
     )
     .then((response) => {
       console.log(response.data);
-      statusset.value = response.data.statusset; //数组类型
-      total.value = response.data.total;
-      // console.log(total.value);
-      // console.log(statusset.value.length);
+      if (validateResponse(response)) {
+        let payload = response.data.payload;
+        statusset.value = payload.content;
+        // total.value =
+      } else {
+        alert();
+      }
     })
     .catch((err) => {
       console.log(err);
     });
+};
+
+onMounted(() => {
+  get_status();
 });
-// 监听变量 或者 调用分页组件的方法
-watch(nowpage, (newpage) => {
-  console.log(`nowpage is ${newpage}`);
-  // console.log(nowpage.value);
-  axios
-    .get(
-      store.state.behindip.onlineip +
-        "/wronganswer/getstatus?page=" +
-        nowpage.value.toString()
-    )
-    .then((response) => {
-      // console.log(response);
-      statusset.value = response.data.statusset; //数组类型
-      total.value = response.data.total;
-      // console.log(statusset.value.length);
-      // problemslitle.value = response.problemset;
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+// 监听变量
+watch(now_page, (newpage) => {
+  console.log(`now_page is ${newpage}`);
+  // console.log(now_page.value);
+  get_status();
 });
 const lookcode = (id: number) => {
   console.log(statusset.value[id].code);
