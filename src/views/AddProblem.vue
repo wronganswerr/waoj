@@ -207,7 +207,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { genFileId } from "element-plus";
 import type { UploadInstance, UploadProps, UploadRawFile } from "element-plus";
 import axios from "axios";
@@ -215,6 +215,8 @@ import JSZip from "jszip";
 
 import store from "@/store";
 import { ElLoading } from "element-plus";
+import router from "@/router";
+import { validateResponse } from "@/utils/utils";
 // import vue_markdown from "vue-markdown";
 const dialogFormVisible = ref(false);
 const problemtitle = ref("");
@@ -240,6 +242,7 @@ const toolbars = ref({
 });
 const upload = ref<UploadInstance>(); //指代组件？
 const fileUpload = ref(); //文件容器
+// 响应式变量展示出处理后的内容
 const data = ref();
 //fail改变时候调用
 
@@ -256,6 +259,14 @@ const exnum = ref(0);
 const exinput = ref("");
 const exoutput = ref("");
 let exampletmp = new Array(0);
+
+onMounted(() => {
+  if (store.state.user.role != 1) {
+    // 非管理员 跳转路由
+    router.push("/");
+  }
+});
+
 const addexpect = () => {
   // 对话框的形式
   // example.value = [{ input: "1", output: "1" }];
@@ -358,28 +369,29 @@ const addprobelm = () => {
     data: JSON.parse(JSON.stringify(data.value)),
   };
 
-  // console.log(problem);
+  console.log(JSON.stringify(problem));
   let config = {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${store.state.user.token}`,
     },
   };
-
   axios
     .post(
-      `${store.state.behindip.onlineip}${store.state.behindip.add_problem}`,
+      `${store.state.behindip.localip}${store.state.behindip.add_problem}`,
       JSON.stringify(problem),
       config
     )
     .then((response) => {
-      console.log(response);
-      if (response.data.state === "OK") {
-        alert("success add a problem");
-        // 跳转到 problem 页面
-      } else {
-        alert("file add a problem");
+      // console.log(response);
+      if (validateResponse(response)) {
+        let paylod = response.data.payload;
+        if (paylod.state === 0) {
+          alert("success add a problem");
+          return;
+        }
       }
+      alert("file add a problem");
     });
 };
 </script>

@@ -19,7 +19,7 @@ export interface BehindIpState {
 
 const state: BehindIpState = {
   onlineip: "http://www.wongansweroj.online:8126",
-  localip: "http://127.0.0.1:8001",
+  localip: "http://127.0.0.1:8126",
   user_login: "/user/login",
   user_register: "/user/register",
   get_user_info: "/user/get_user_info",
