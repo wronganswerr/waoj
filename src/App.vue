@@ -81,8 +81,10 @@
 import { createLogger, useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ref, onMounted } from "vue";
+import axios from "axios";
 import LoGin from "./components/loginpage/LoGin.vue";
 import ReGister from "./components/loginpage/ReGister.vue";
+import { validateResponse } from "./utils/utils";
 
 const dialogTableVisiblelogin = ref(false);
 const dialogTableVisibleregister = ref(false);
@@ -98,8 +100,75 @@ onMounted(() => {
   let info = localStorage.getItem("info"); //取出字符串
   console.log(info);
   if (info == null) return;
+  // 发送请求验证token
   store.dispatch("user/getuserinfo", JSON.parse(info as string));
+  let config = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${store.state.user.token}`,
+    },
+  };
+  axios
+    .post(
+      `${store.state.behindip.onlineip}${store.state.behindip.check_token}`,
+      JSON.stringify({
+        user_id: store.state.user.user_id,
+      }),
+      config
+    )
+    .then((response) => {
+      if (validateResponse(response)) {
+        let content = response.data;
+        if (content.code != 0) {
+          alert("serve error");
+          return;
+        } else {
+          let user_info = {
+            name: content.payload.user_info.user_name,
+            role: content.payload.user_info.role,
+            token: content.payload.token,
+            user_id: content.payload.user_info.user_id,
+          };
+          store.dispatch("user/getuserinfo", user_info);
+          localStorage.setItem(
+            "info",
+            JSON.stringify({
+              role: store.state.user.role,
+              name: store.state.user.name,
+              user_id: store.state.user.user_id,
+              token: store.state.user.token,
+            })
+          );
+        }
+      } else {
+        store.dispatch("user/getuserinfo", {
+          name: "",
+          role: 0,
+          token: "",
+          user_id: 0,
+        });
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+      store.dispatch("user/getuserinfo", {
+        name: "",
+        role: 0,
+        token: "",
+        user_id: 0,
+      });
+      localStorage.setItem(
+        "info",
+        JSON.stringify({
+          role: store.state.user.role,
+          name: store.state.user.name,
+          user_id: store.state.user.user_id,
+          token: store.state.user.token,
+        })
+      );
+    });
 });
+
 const chlicklogin = () => {
   // 显示一个上浮的登录窗口
   dialogTableVisiblelogin.value = true;

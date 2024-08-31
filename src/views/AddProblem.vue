@@ -347,21 +347,21 @@ const onchange = (file: object) => {
 const addprobelm = () => {
   // console.log("add problem");
   let problem = {
-    problemtitle: problemtitle.value,
-    timelimit: timelimit.value,
-    memorylimit: memorylimit.value,
-    problemmain: problemmain.value,
-    inputdescribe: inputdescribe.value,
-    outputdescribe: outputdescribe.value,
+    problem_title: problemtitle.value,
+    time_limit: timelimit.value,
+    memory_limit: memorylimit.value,
+    problem_main: problemmain.value,
+    input_describe: inputdescribe.value,
+    output_describe: outputdescribe.value,
     example: exampletmp,
     is_hide: is_hide.value,
     data: JSON.parse(JSON.stringify(data.value)),
   };
 
-  console.log(problem);
+  // console.log(problem);
   let config = {
     headers: {
-      "Content-Type": "multipart/json, charset=UTF-8",
+      "Content-Type": "application/json, charset=UTF-8",
       Authorization: `Bearer ${store.state.user.token}`,
     },
   };

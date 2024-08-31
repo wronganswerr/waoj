@@ -79,7 +79,7 @@ const fetchData = async () => {
   try {
     let config = {
       headers: {
-        "Content-Type": "multipart/json, charset=UTF-8",
+        "Content-Type": "application/json, charset=UTF-8",
         Authorization: `Bearer ${store.state.user.token}`,
       },
     };
@@ -154,7 +154,7 @@ const changetopro = (problem_id: string) => {
 const deletetopro = (problem_id: string, id: number) => {
   let config = {
     headers: {
-      "Content-Type": "multipart/json, charset=UTF-8",
+      "Content-Type": "application/json, charset=UTF-8",
       Authorization: `Bearer ${store.state.user.token}`,
     },
   };

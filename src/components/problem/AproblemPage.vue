@@ -134,7 +134,7 @@ let problem_id = route.query.problem_id;
 // console.log(route.query.rid);
 onMounted(() => {
   let config = {
-    headers: { "Content-Type": "multipart/json, charset=UTF-8" },
+    headers: { "Content-Type": "application/json, charset=UTF-8" },
   };
   let data = {
     problem_id: problem_id,

@@ -54,7 +54,7 @@ watch(code, (newcode) => {
 });
 const submit = () => {
   let config = {
-    headers: { "Content-Type": "multipart/json, charset=UTF-8" },
+    headers: { "Content-Type": "application/json, charset=UTF-8" },
   };
   buts.value = true; //按钮置为不可用
   let currentDate = new Date();

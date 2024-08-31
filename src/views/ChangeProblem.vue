@@ -276,7 +276,7 @@ onMounted(() => {
   console.log("init");
   // ridgetproblemall 获取所有数据渲染到 数据预览区域
   let config = {
-    headers: { "Content-Type": "multipart/json, charset=UTF-8" },
+    headers: { "Content-Type": "application/json, charset=UTF-8" },
   };
   let data = {
     rid: rid,
@@ -385,7 +385,7 @@ const changeprobelm = () => {
   };
   // console.log(problem);
   let config = {
-    headers: { "Content-Type": "multipart/json, charset=UTF-8" },
+    headers: { "Content-Type": "application/json, charset=UTF-8" },
   };
   //直接post json对象
   // http://127.0.0.1:8001/wronganswer/addproblem/

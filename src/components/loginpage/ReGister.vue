@@ -44,7 +44,7 @@ const chlick = () => {
   //http://43.143.247.211:8001/ 服务器公网IP 带端口号
   //http://127.0.0.1:8001/
   let config = {
-    headers: { "Content-Type": "multipart/json, charset=UTF-8" },
+    headers: { "Content-Type": "application/json, charset=UTF-8" },
   };
   let data = {
     user_name: accout.value,
