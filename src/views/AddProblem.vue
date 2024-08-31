@@ -40,8 +40,8 @@
               <el-switch
                 v-model="is_hide"
                 size="large"
-                active-text="hide form vector"
-                inactive-text="show to vector"
+                active-text="hide form visitor"
+                inactive-text="show to visitor"
               />
             </div>
           </div>
@@ -361,7 +361,7 @@ const addprobelm = () => {
   // console.log(problem);
   let config = {
     headers: {
-      "Content-Type": "application/json, charset=UTF-8",
+      "Content-Type": "application/json",
       Authorization: `Bearer ${store.state.user.token}`,
     },
   };

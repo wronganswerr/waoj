@@ -144,7 +144,7 @@ onMounted(() => {
         store.dispatch("user/getuserinfo", {
           name: "",
           role: 0,
-          token: "",
+          token: "visitor",
           user_id: 0,
         });
       }
@@ -154,7 +154,7 @@ onMounted(() => {
       store.dispatch("user/getuserinfo", {
         name: "",
         role: 0,
-        token: "",
+        token: "visitor",
         user_id: 0,
       });
       localStorage.setItem(
@@ -215,8 +215,10 @@ const chlicklogout = () => {
   background-color: white;
   display: block;
 }
+
 .no-underline {
   text-decoration: none;
+  font-size: large;
 }
 
 /* .app {
@@ -225,6 +227,7 @@ const chlicklogout = () => {
 body {
   height: 30%;
 }
+
 #foot {
   text-align: center;
   bottom: 0px;

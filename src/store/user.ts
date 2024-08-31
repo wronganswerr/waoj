@@ -8,10 +8,14 @@ export interface UserState {
   user_id: number;
 }
 
+// SUPERMAN = 1 管理员
+// COMMONUSER = 2 用户
+// VISITOT = 0 游客
+
 const state: UserState = {
   name: "",
   role: 0,
-  token: "",
+  token: "visitor",
   user_id: 0,
 };
 

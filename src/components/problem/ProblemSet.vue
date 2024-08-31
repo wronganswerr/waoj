@@ -53,11 +53,13 @@
 <script setup lang="ts">
 import { validateResponse } from "@/utils/utils";
 import axios from "axios";
+import { tr } from "element-plus/es/locale";
 import { ref, onMounted, toRaw } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 const store = useStore(); //访问全局变量
 const problem_list = ref<ProblemInfo[]>([]);
+const problem_id_index_map = new Map<string, number>();
 
 interface ProblemInfo {
   problem_id: string;
@@ -88,34 +90,53 @@ const fetchData = async () => {
       config
     );
     const user_problem_request = axios.get(
-      `${store.state.behindip.onlineip}${store.state.behindip.get_user_problem_status}`
+      `${store.state.behindip.onlineip}${store.state.behindip.get_user_problem_status}`,
+      config
     );
 
     // 使用 Promise.all 等待两个请求都完成
-    const [result_1, result_2] = await Promise.all([
-      all_problem_request,
-      user_problem_request,
-    ]);
-    if (validateResponse(result_1)) {
-      if (validateResponse(result_2)) {
-        let payload_1 = result_1.data.content.payload;
-        let payload_2 = result_2.data.content.payload;
-        for (let i = 0; i < payload_1.problem_list.length; i++) {
+    let result_1, result_2, payload_1, payload_2;
+    try {
+      result_1 = await all_problem_request;
+    } catch (error) {
+      console.log(`all_problem_request ${error}`);
+    } finally {
+      if (validateResponse(result_1)) {
+        console.log(result_1);
+        payload_1 = result_1.data.payload;
+        for (let i = 0; i < payload_1.content.length; i++) {
           let solve = "unslove";
-          if (payload_2.problem_list[i]) {
-            solve = "solve";
-          }
           problem_list.value.push({
-            problem_id: payload_1.problem_list[i].problem_id,
-            problem_title: payload_1.problem_list[i].problem_title,
+            problem_id: payload_1.content[i].problem_id,
+            problem_title: payload_1.content[i].problem_title,
             solve: solve,
           });
+          problem_id_index_map.set(payload_1.content[i].problem_id, i);
         }
       } else {
-        // user_problem_request error just set problem list
+        alert("serve error");
       }
-    } else {
-      alert("serve error");
+    }
+
+    try {
+      result_2 = await user_problem_request;
+    } catch (error) {
+      console.log(`all_problem_request ${error}`);
+    } finally {
+      if (validateResponse(result_2)) {
+        payload_2 = result_2.data.payload;
+        for (let i = 0; i < payload_2.content.length; i++) {
+          let solve = "slove";
+          let problem_index: number =
+            problem_id_index_map.get(payload_1.content[i].problem_id) ?? -1;
+          if (problem_index == -1) {
+            continue;
+          }
+          problem_list.value[problem_index].solve = solve;
+        }
+      } else {
+        alert("serve error");
+      }
     }
   } catch (error) {
     // 处理请求错误

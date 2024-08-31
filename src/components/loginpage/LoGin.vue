@@ -2,7 +2,7 @@
   <div id="breakgd">
     <el-row :gutter="20">
       <el-col :span="4">
-        <p>用户名</p>
+        <p>手机号/用户ID</p>
       </el-col>
       <el-col :span="20"
         ><el-input
@@ -52,6 +52,7 @@ const chlicklogin = () => {
   };
   let data = {
     user_id: Number(accout.value),
+    phone_number: accout.value,
     pass_word: String(password.value),
   };
   console.log(data);
