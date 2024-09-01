@@ -116,6 +116,8 @@ import { useStore } from "vuex";
 import axios from "axios";
 import SubmitProblem from "@/components/problem/SubmitProblem.vue";
 import { validateResponse, anotherUtilityFunction } from "../../utils/utils";
+import router from "@/router";
+import { da } from "element-plus/es/locale";
 
 // 父组件向子组件传参？路由跳转时传参
 const route = useRoute();
@@ -134,26 +136,26 @@ let problem_id = route.query.problem_id;
 // console.log(route.query.rid);
 onMounted(() => {
   let config = {
-    headers: { "Content-Type": "application/json, charset=UTF-8" },
+    headers: { "Content-Type": "application/json" },
   };
   let data = {
     problem_id: problem_id,
   };
-
+  console.log(data);
   axios
     .post(
-      `${store.state.behindip.onlineip}${store.state.behindip.get_problem_detile}`,
+      `${store.state.behindip.localip}${store.state.behindip.get_problem_detile}`,
       JSON.stringify(data),
       config
     )
     .then((response) => {
       if (!validateResponse(response)) {
         // 服务端错误时需要跳转至home
+        router.push("/");
         return;
       }
 
-      let content = response.data.content;
-      let payload = content.payload;
+      let payload = response.data.payload;
 
       problemid.value = payload.problem_id;
       problemtitle.value = payload.problem_title;
@@ -163,6 +165,9 @@ onMounted(() => {
       timelimit.value = payload.timelimit;
       memorylimit.value = payload.memorylimit;
       example.value = payload.example;
+    })
+    .catch((error) => {
+      console.log(error);
     });
 
   if (store.state.user.role > -1) {
@@ -170,21 +175,24 @@ onMounted(() => {
       user_id: store.state.user.user_id,
       problem_id: problem_id?.toString(),
     };
-    axios
-      .post(
-        `${store.state.behindip.onlineip}${store.state.behindip.get_user_problem_status}`,
-        JSON.stringify(data),
-        config
-      )
-      .then((response) => {
-        if (validateResponse(response)) {
-          let content = response.data.content;
-          let payload = content.payload;
-          let sta = payload.solve_id_list; //array 取出solve的problem的id
-          // console.log(sta);
-          theprosta.value = sta;
-        }
-      });
+    // axios
+    //   .post(
+    //     `${store.state.behindip.onlineip}${store.state.behindip.get_user_problem_status}`,
+    //     JSON.stringify(data),
+    //     config
+    //   )
+    //   .then((response) => {
+    //     if (validateResponse(response)) {
+    //       let content = response.data.content;
+    //       let payload = content.payload;
+    //       let sta = payload.solve_id_list; //array 取出solve的problem的id
+    //       // console.log(sta);
+    //       theprosta.value = sta;
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //   });
   }
 });
 </script>

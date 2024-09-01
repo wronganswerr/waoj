@@ -34,12 +34,12 @@
             <!-- <router-link target="_blank" to="/aproblempage">look</router-link> -->
           </div>
           <!-- 只有当前用户为管理员时显示 -->
-          <div class="inline" v-if="store.state.user.role == 0">
+          <div class="inline" v-if="store.state.user.role == 1">
             <el-button type="primary" @click="changetopro(i.problem_id)"
               >Change</el-button
             >
           </div>
-          <div class="inline" v-if="store.state.user.role == 0">
+          <div class="inline" v-if="store.state.user.role == 1">
             <el-button type="primary" @click="deletetopro(i.problem_id, index)"
               >Delete</el-button
             >
@@ -86,7 +86,7 @@ const fetchData = async () => {
       },
     };
     const all_problem_request = axios.get(
-      `${store.state.behindip.onlineip}${store.state.behindip.get_all_problem}`,
+      `${store.state.behindip.localip}${store.state.behindip.get_all_problem}`,
       config
     );
     const user_problem_request = axios.get(
@@ -105,10 +105,10 @@ const fetchData = async () => {
         console.log(result_1);
         payload_1 = result_1.data.payload;
         for (let i = 0; i < payload_1.content.length; i++) {
-          let solve = "unslove";
+          let solve = "unsolve";
           problem_list.value.push({
-            problem_id: payload_1.content[i].problem_id,
-            problem_title: payload_1.content[i].problem_title,
+            problem_id: payload_1.content[i]._id,
+            problem_title: payload_1.content[i].problemtitle,
             solve: solve,
           });
           problem_id_index_map.set(payload_1.content[i].problem_id, i);
