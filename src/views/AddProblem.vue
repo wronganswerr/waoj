@@ -378,7 +378,7 @@ const addprobelm = () => {
   };
   axios
     .post(
-      `${store.state.behindip.localip}${store.state.behindip.add_problem}`,
+      `${store.state.behindip.onlineip}${store.state.behindip.add_problem}`,
       JSON.stringify(problem),
       config
     )

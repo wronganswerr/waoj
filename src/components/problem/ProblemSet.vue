@@ -86,7 +86,7 @@ const fetchData = async () => {
       },
     };
     const all_problem_request = axios.get(
-      `${store.state.behindip.localip}${store.state.behindip.get_all_problem}`,
+      `${store.state.behindip.onlineip}${store.state.behindip.get_all_problem}`,
       config
     );
     const user_problem_request = axios.get(

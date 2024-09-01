@@ -144,7 +144,7 @@ onMounted(() => {
   console.log(data);
   axios
     .post(
-      `${store.state.behindip.localip}${store.state.behindip.get_problem_detile}`,
+      `${store.state.behindip.onlineip}${store.state.behindip.get_problem_detile}`,
       JSON.stringify(data),
       config
     )
