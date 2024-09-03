@@ -12,4 +12,6 @@ app.use(store);
 app.use(mavonEditor);
 app.use(ElementPlus);
 app.use(router);
+app.provide("store", store);
+
 app.mount("#app");
