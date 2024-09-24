@@ -156,9 +156,9 @@ onMounted(() => {
       }
 
       let payload = response.data.payload;
-
+      console.log(payload);
       problemid.value = payload.problem_id;
-      problemtitle.value = payload.problem_title;
+      problemtitle.value = payload.problemtitle;
       problemmain.value = payload.problemmain;
       inputdescribe.value = payload.inputdescribe;
       outputdescribe.value = payload.outputdescribe;
@@ -204,41 +204,49 @@ onMounted(() => {
   /* display: flex; */
   text-align: center;
 }
+
 #title h5 {
   margin-block-start: 0em;
   margin-block-end: 0em;
 }
+
 #main {
   margin: 10px;
   height: auto;
   background-color: white;
   padding: 2px;
 }
+
 #inputd {
   margin: 10px;
   background-color: white;
   padding: 2px;
 }
+
 #outputd {
   margin: 10px;
   background-color: white;
   padding: 2px;
 }
+
 #sample {
   margin: 10px;
   background-color: white;
   padding: 5px;
 }
+
 #text {
   display: "block";
   white-space: pre-line;
   border-style: solid;
   margin-bottom: 10px;
 }
+
 #backgroud {
   /* background-color: red; */
   width: 80%;
 }
+
 #Lastsubmissions {
   background-color: white;
   height: 600px;
