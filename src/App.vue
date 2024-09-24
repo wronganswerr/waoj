@@ -84,7 +84,7 @@ import { ref, onMounted } from "vue";
 import axios from "axios";
 import LoGin from "./components/loginpage/LoGin.vue";
 import ReGister from "./components/loginpage/ReGister.vue";
-import { validateResponse } from "./utils/utils";
+import { clear_local_user_info, validateResponse } from "./utils/utils";
 
 const dialogTableVisiblelogin = ref(false);
 const dialogTableVisibleregister = ref(false);
@@ -94,6 +94,7 @@ const router = useRouter();
 router.afterEach((to) => {
   selectedkeys.value = [to.path];
 });
+
 onMounted(() => {
   document.title = "个人技术学习-WAOJ";
   //组件挂载完后执行
@@ -120,7 +121,12 @@ onMounted(() => {
       if (validateResponse(response)) {
         let content = response.data;
         if (content.code != 0) {
-          alert("serve error");
+          if (content.code == 41001) {
+            console.log(content);
+            clear_local_user_info(store);
+          } else {
+            alert("serve error");
+          }
           return;
         } else {
           let user_info = {
@@ -151,21 +157,7 @@ onMounted(() => {
     })
     .catch((error) => {
       console.log(error);
-      store.dispatch("user/getuserinfo", {
-        name: "",
-        role: 0,
-        token: "visitor",
-        user_id: 0,
-      });
-      localStorage.setItem(
-        "info",
-        JSON.stringify({
-          role: store.state.user.role,
-          name: store.state.user.name,
-          user_id: store.state.user.user_id,
-          token: store.state.user.token,
-        })
-      );
+      clear_local_user_info(store);
     });
 });
 
