@@ -21,19 +21,23 @@
           style="width: 100%"
           :cell-style="cellstyle"
         >
+          <el-table-column prop="when" label="when" min-width="100" />
           <el-table-column
-            prop="id"
-            label="id"
+            prop="problem_title"
+            label="Problem"
             show-overflow-tooltip
-            min-width="20%"
           />
-          <el-table-column prop="submitwhen" label="when" min-width="90%" />
-          <el-table-column prop="submitproblemtitle" label="Problem" />
-          <el-table-column prop="submituser" label="who" />
-          <el-table-column prop="submitlang" label="lang" />
-          <el-table-column prop="verdict" label="Verdict" />
-          <el-table-column prop="message" label="Message" min-width="100" />
-          <el-table-column prop="runtime" label="Time" />
+          <el-table-column prop="user_id" label="who" show-overflow-tooltip />
+          <el-table-column prop="language" label="lang" />
+          <el-table-column prop="verdict" label="Verdict" width="160" />
+          <el-table-column
+            prop="message"
+            label="Message"
+            min-width="100"
+            show-overflow-tooltip
+          />
+          <el-table-column prop="runtime" label="Time(ms)" />
+          <el-table-column prop="memory" label="Memory(KB)" />
           <!-- <el-table-column prop="runmemort" label="Memory" /> -->
           <!-- 对话框显示代码 -->
           <el-table-column label="Code">
@@ -134,7 +138,7 @@ const cellstyle = ({ row, column }) => {
   // console.log(columnIndex);
   if (column.label == "Verdict") {
     // console.log(row.verdict);
-    if (row.verdict == "Accept") {
+    if (row.verdict == "ACCEPT") {
       return { color: "green", "font-weight": 800 };
     } else {
       return { color: "red", "font-weight": 800 };

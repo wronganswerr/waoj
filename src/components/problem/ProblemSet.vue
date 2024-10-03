@@ -53,8 +53,7 @@
 <script setup lang="ts">
 import { validateResponse } from "@/utils/utils";
 import axios from "axios";
-import { tr } from "element-plus/es/locale";
-import { ref, onMounted, toRaw } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 const store = useStore(); //访问全局变量
@@ -113,8 +112,6 @@ const fetchData = async () => {
           });
           problem_id_index_map.set(payload_1.content[i].problem_id, i);
         }
-      } else {
-        alert("serve error");
       }
     }
 
@@ -126,7 +123,7 @@ const fetchData = async () => {
       if (validateResponse(result_2)) {
         payload_2 = result_2.data.payload;
         for (let i = 0; i < payload_2.content.length; i++) {
-          let solve = "slove";
+          let solve = "beensolved";
           let problem_index: number =
             problem_id_index_map.get(payload_1.content[i].problem_id) ?? -1;
           if (problem_index == -1) {
@@ -134,8 +131,6 @@ const fetchData = async () => {
           }
           problem_list.value[problem_index].solve = solve;
         }
-      } else {
-        alert("serve error");
       }
     }
   } catch (error) {
@@ -231,16 +226,15 @@ const deletetopro = (problem_id: string, id: number) => {
   color: var(--el-color-primary);
 }
 
-.solve {
+.beensolved {
   display: flex;
   align-items: center;
   /* justify-content: center; */
   height: 50px;
   padding-left: 10px;
+  background-color: rgb(142, 230, 142);
   margin: 10px;
   color: var(--el-color-primary);
-
-  background-color: rgb(142, 230, 142);
 }
 
 .inline {
