@@ -101,8 +101,8 @@ const fetchData = async () => {
       console.log(`all_problem_request ${error}`);
     } finally {
       if (validateResponse(result_1)) {
-        console.log(result_1);
         payload_1 = result_1.data.payload;
+        console.log(payload_1);
         for (let i = 0; i < payload_1.content.length; i++) {
           let solve = "unsolve";
           problem_list.value.push({
@@ -110,7 +110,7 @@ const fetchData = async () => {
             problem_title: payload_1.content[i].problemtitle,
             solve: solve,
           });
-          problem_id_index_map.set(payload_1.content[i].problem_id, i);
+          problem_id_index_map.set(payload_1.content[i]._id, i);
         }
       }
     }
@@ -122,10 +122,11 @@ const fetchData = async () => {
     } finally {
       if (validateResponse(result_2)) {
         payload_2 = result_2.data.payload;
+        console.log(payload_2);
         for (let i = 0; i < payload_2.content.length; i++) {
           let solve = "beensolved";
           let problem_index: number =
-            problem_id_index_map.get(payload_1.content[i].problem_id) ?? -1;
+            problem_id_index_map.get(payload_2.content[i]) ?? -1;
           if (problem_index == -1) {
             continue;
           }
@@ -159,7 +160,7 @@ const changetopro = (problem_id: string) => {
     router.resolve({
       path: "/changeproblem",
       query: {
-        rid: problem_id,
+        problem_id: problem_id,
       },
     }).href,
     "_blank"
@@ -170,7 +171,7 @@ const changetopro = (problem_id: string) => {
 const deletetopro = (problem_id: string, id: number) => {
   let config = {
     headers: {
-      "Content-Type": "application/json, charset=UTF-8",
+      "Content-Type": "application/json",
       Authorization: `Bearer ${store.state.user.token}`,
     },
   };
@@ -189,7 +190,6 @@ const deletetopro = (problem_id: string, id: number) => {
       console.log(res);
       // 不刷新页面 更新组件
       problem_list.value.splice(id, 1);
-      problem_list.value.splice(id - 1, 1);
     })
     .catch((error) => {
       console.log(error);

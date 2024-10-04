@@ -16,6 +16,7 @@ export interface BehindIpState {
   check_token: string;
   get_status: string;
   submit_problem: string;
+  update_problem: string;
 }
 
 const state: BehindIpState = {
@@ -34,6 +35,7 @@ const state: BehindIpState = {
   upload_problem_data: "/problem/upload_problem_data",
   get_status: "/user/get_status",
   submit_problem: "/problem/submit_problem",
+  update_problem: "/problem/update_problem",
 };
 
 export default {
