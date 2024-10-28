@@ -50,6 +50,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "chatroom",
     component: () => import("../views/ChatRoom.vue"),
   },
+  {
+    path: "/profile",
+    name: "profile",
+    component: () => import("../views/ProfileView.vue"),
+  },
 ];
 
 const router = createRouter({
