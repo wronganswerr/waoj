@@ -1,1 +1,19 @@
-.bottom[data-v-e62aeb30]{margin:10px;width:100%;height:100%;border-style:solid;border-width:5px}#bottom[data-v-5ef6ba76]{padding:100px;background-image:url(/img/2.f5cba816.jpg);background-size:100% 100%}#bottom[data-v-5ef6ba76],.bottom[data-v-41b0c15f]{margin-top:10px;height:800px;background-color:#fff;overflow:hidden}
+.bottom[data-v-e62aeb30] {
+  margin: 10px;
+  width: 100%;
+  height: 100%;
+  border-style: solid;
+  border-width: 5px;
+}
+#bottom[data-v-5ef6ba76] {
+  padding: 100px;
+  background-image: url(/img/2.f5cba816.jpg);
+  background-size: 100% 100%;
+}
+#bottom[data-v-5ef6ba76],
+.bottom[data-v-41b0c15f] {
+  margin-top: 10px;
+  height: 800px;
+  background-color: #fff;
+  overflow: hidden;
+}

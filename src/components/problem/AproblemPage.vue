@@ -83,10 +83,9 @@
         </div>
         <div></div>
       </div>
-      <SubmitProblem
-        :submitproblemid="problemid"
-        :submitproblemtitle="problemtitle"
-      />
+      <div>
+        <SubmitProblem :problemid="down_problemid" />
+      </div>
     </div>
     <el-affix style="margin-left: 10px; width: 20%" :offset="60">
       <div id="Lastsubmissions">
@@ -121,7 +120,7 @@ import { da } from "element-plus/es/locale";
 
 // 父组件向子组件传参？路由跳转时传参
 const route = useRoute();
-const problemid = ref("");
+
 const problemtitle = ref("");
 const problemmain = ref("");
 const timelimit = ref(1);
@@ -134,7 +133,12 @@ const store = useStore(); //store.state.user.username
 // const text = ref("$a$");
 let problem_id = route.query.problem_id;
 // console.log(route.query.rid);
+
+const down_problemid = ref("1");
+
 onMounted(() => {
+  down_problemid.value = String(problem_id);
+  console.log(`problem_id ${down_problemid.value}`);
   let config = {
     headers: { "Content-Type": "application/json" },
   };
@@ -142,6 +146,7 @@ onMounted(() => {
     problem_id: problem_id,
   };
   console.log(data);
+  // 这里的异步请求需要改成同步的
   axios
     .post(
       `${store.state.behindip.onlineip}${store.state.behindip.get_problem_detile}`,
@@ -154,10 +159,8 @@ onMounted(() => {
         router.push("/");
         return;
       }
-
       let payload = response.data.payload;
       console.log(payload);
-      problemid.value = payload.problem_id;
       problemtitle.value = payload.problemtitle;
       problemmain.value = payload.problemmain;
       inputdescribe.value = payload.inputdescribe;
