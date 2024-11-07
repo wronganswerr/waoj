@@ -55,6 +55,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "ranklist",
     component: () => import("../views/RankList.vue"),
   },
+  {
+    path: "/profile",
+    name: "profile",
+    component: () => import("../views/ProfileView.vue"),
+  }
 ];
 
 const router = createRouter({
