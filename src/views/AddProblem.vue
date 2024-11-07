@@ -173,13 +173,13 @@
         <!-- 用v-for 渲染数据预览区域 -->
         <div
           style="
-            height: 90%;
+            max-height: 700px;
             overflow: auto;
             /* background-color: brown; */
             margin: 5px;
           "
         >
-          <div class="text" v-for="item in data" :key="item.ind">
+          <div class="text" v-for="(item, index) in data" :key="index">
             <p
               style="
                 background-color: rgb(222, 225, 200);
@@ -213,11 +213,12 @@ import type { UploadInstance, UploadProps, UploadRawFile } from "element-plus";
 import axios from "axios";
 import JSZip from "jszip";
 
-import store from "@/store";
 import { ElLoading } from "element-plus";
 import router from "@/router";
 import { validateResponse } from "@/utils/utils";
+import { useStore } from "vuex";
 // import vue_markdown from "vue-markdown";
+const store = useStore(); //访问全局变量
 const dialogFormVisible = ref(false);
 const problemtitle = ref("");
 const problemmain = ref("");
@@ -243,8 +244,12 @@ const toolbars = ref({
 const upload = ref<UploadInstance>(); //指代组件？
 const fileUpload = ref(); //文件容器
 // 响应式变量展示出处理后的内容
-const data = ref();
+const data = ref<ExampleItem[]>([]);
 //fail改变时候调用
+interface ExampleItem {
+  input: string;
+  output: string;
+}
 
 const handleExceed: UploadProps["onExceed"] = (files) => {
   // console.log(upload.value);
@@ -303,11 +308,11 @@ const onchange = (file: object) => {
   // let temp: any[] = new Array(101);
   // console.log(indata[0]);
   mes.value = "开始处理数据";
+  let dataa: ExampleItem[] = new Array(0);
   zipf
     .loadAsync(zipfile)
     .then(async (zip) => {
       // let dataa: object[];
-      let dataa: object[] = new Array(0);
       for (let i = 1; i <= 100; i++) {
         st[i] = 0;
         // console.log(i.toString() + ".in");
@@ -326,7 +331,7 @@ const onchange = (file: object) => {
               st[i] += 1;
               if (st[i] == 2) {
                 dataa.push({ input: indata[i], output: outdata[i] });
-                data.value = dataa;
+                // data.value = dataa;
                 datanum.value++;
               }
             });
@@ -340,7 +345,7 @@ const onchange = (file: object) => {
               st[i] += 1;
               if (st[i] == 2) {
                 dataa.push({ input: indata[i], output: outdata[i] });
-                data.value = dataa;
+                // data.value = dataa;
                 datanum.value++;
               }
             });
@@ -348,10 +353,9 @@ const onchange = (file: object) => {
       }
     })
     .finally(() => {
-      // console.log(data);
-      setTimeout(() => {
-        loading.close();
-      }, 2000);
+      data.value = dataa;
+      console.log(data.value.length);
+      loading.close();
     });
 };
 
@@ -376,6 +380,13 @@ const addprobelm = () => {
       Authorization: `Bearer ${store.state.user.token}`,
     },
   };
+
+  const loading = ElLoading.service({
+    lock: true,
+    text: "loding",
+    background: "rgba(0, 0, 0, 0.7)",
+  });
+
   axios
     .post(
       `${store.state.behindip.onlineip}${store.state.behindip.add_problem}`,
@@ -392,68 +403,152 @@ const addprobelm = () => {
         }
       }
       alert("file add a problem");
+    })
+    .finally(() => {
+      loading.close();
     });
 };
 </script>
 <style scoped>
 #bottom {
-  /* width: 1000px; */
   margin-top: 10px;
-  /* padding: 100px; */
-  /* height: 100%; */
   background-color: white;
-  background-size: 100% 100%;
   overflow: hidden;
   display: flex;
 }
 
 .ed {
-  /* height: auto; */
   width: 100%;
-  /* height: 1500px; */
   margin: 10px;
-  /* background-color: red; */
 }
 
-.tpdata {
-  background-color: white;
+.form-row {
+  display: flex;
+  height: 80px;
+  align-items: center;
+}
+
+.form-item {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.form-label {
+  font-size: 20px;
+  margin-right: 10px;
+}
+
+.form-input,
+.form-select {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.form-switch {
+  margin-left: 5%;
+  margin-top: 1%;
+}
+
+.editor {
+  height: 500px;
   margin: 10px;
-  height: 62%;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  /* overflow: hidden; */
-  /* margin-bottom: 10px; */
 }
 
-.text {
-  display: "block";
-  white-space: pre-line;
-}
-
-#txtontp p {
-  margin: 5px;
-}
-
-#gg {
-  background-color: rgb(225, 225, 225);
-  margin: 10px;
-  width: 30%;
-  /* height: 600px; */
-}
-
-#txtontp {
-  background-color: white;
-  margin: 10px;
-  height: 600px;
-}
-
-#addbut {
-  margin: 10px;
+.small-editor {
+  height: 50px;
 }
 
 #example {
   background-color: rgb(243, 246, 231);
   margin: 20px;
   height: 320px;
+}
+
+.example-header {
+  display: flex;
+  align-items: center;
+  margin-left: 5px;
+}
+
+.example-button {
+  margin: 10px;
+}
+
+.example-content {
+  overflow: auto;
+  height: 250px;
+  white-space: pre-line;
+  padding: 10px;
+}
+
+.example-item {
+  margin: 10px 0;
+}
+
+.example-input {
+  margin: 0;
+  background-color: wheat;
+}
+
+.example-output {
+  margin: 0;
+  background-color: white;
+}
+
+#gg {
+  background-color: rgb(235, 233, 233);
+  /* margin: 10px; */
+  width: 30%;
+}
+
+#txtontp {
+  background-color: white;
+  /* margin: 10px; */
+  margin-bottom: 10px;
+  margin-left: 10px;
+  height: 600px;
+  padding: 5px;
+}
+
+.tpdata {
+  background-color: white;
+  margin-left: 10px;
+  /* max-height: 700px; */
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 5px;
+}
+
+.upload-button {
+  margin: 10px;
+}
+
+.data-preview {
+  height: 90%;
+  overflow: auto;
+  margin: 5px;
+}
+
+.text {
+  display: block;
+  white-space: pre-line;
+  /* overflow: auto; */
+}
+
+.data-input,
+.data-output {
+  background-color: rgb(222, 225, 200);
+  margin: 5px;
+  max-height: 80px;
+  height: 80px;
+  overflow: auto;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.data-output {
+  background-color: rgb(249, 238, 152);
 }
 </style>

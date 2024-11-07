@@ -94,7 +94,7 @@ const chlick = () => {
   //http://43.143.247.211:8001/ 服务器公网IP 带端口号
   //http://127.0.0.1:8001/
   let config = {
-    headers: { "Content-Type": "application/json, charset=UTF-8" },
+    headers: { "Content-Type": "application/json" },
   };
 
   if (!check_data()) {
@@ -115,10 +115,17 @@ const chlick = () => {
       if (!validateResponse(response)) {
         return;
       }
-      let content = response.data.content;
-      if (content.code === 0) {
+      let payload = response.data.payload;
+      console.log(payload);
+      if (payload.state === 0) {
         // console.log(response.data); //成功直接登录
-        store.dispatch("user/getuserinfo", content.payload);
+        let user_info = {
+          name: payload.user_info.user_name,
+          role: payload.user_info.role,
+          token: payload.token,
+          user_id: payload.user_info.user_id,
+        };
+        store.dispatch("user/getuserinfo", user_info);
         localStorage.setItem(
           "info",
           JSON.stringify({

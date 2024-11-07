@@ -36,80 +36,95 @@ import { ref, defineProps, watch } from "vue";
 import axios from "axios";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import { validateResponse } from "../../utils/utils";
+// import { checkTagEmits } from "element-plus";
 const code = ref("");
 const buts = ref(true);
 const lange = ref();
-const props = defineProps(["submitproblemid", "submitproblemtitle"]);
+const props = defineProps<{ problemid: string }>();
 const store = useStore(); //store.state.user.username
 const router = useRouter(); //跳转至提交页面
-const options = ["C++", "Python3"];
+const options = ["cpp", "python"];
 // 内容为空时禁用
 watch(code, (newcode) => {
   console.log(newcode);
-  if (newcode != "") {
+  if (newcode != "" || newcode.length >= 5000) {
     buts.value = false;
   } else {
     buts.value = true;
   }
 });
+
+function check_user(): boolean {
+  if (store.state.user.role === 0) {
+    return false;
+  }
+  return true;
+}
+
 const submit = () => {
+  if (!check_user()) {
+    alert("注册后可以提交代码");
+    return;
+  }
+
   let config = {
-    headers: { "Content-Type": "application/json, charset=UTF-8" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${store.state.user.token}`,
+    },
   };
+
   buts.value = true; //按钮置为不可用
-  let currentDate = new Date();
-  let year = currentDate.getFullYear();
-  let month = currentDate.getMonth() + 1;
-  let date = currentDate.getDate();
-  let hours = currentDate.getHours();
-  let minutes = currentDate.getMinutes();
-  let seconds = currentDate.getSeconds();
+
+  // problem_id: str
+  // code: str
+  // language: str
+  // online_oj_choose:str = 'waoj'
   let data = {
     code: code.value,
-    user_id: store.state.user.id,
-    submitwhen:
-      year +
-      "-" +
-      month +
-      "-" +
-      date +
-      " " +
-      hours +
-      ":" +
-      minutes +
-      ":" +
-      seconds,
-    submitlang: lange.value,
-    submitproblemid: props.submitproblemid,
-    submitproblemtitle: props.submitproblemtitle,
-    runtime: 0,
-    runmemort: 0,
-    verdict: "in queue",
+    language: lange.value,
+    problem_id: props.problemid,
+    online_oj_choose: "waoj",
   };
   // console.log("submit");
   // 发送axios请求
   // http://127.0.0.1:8001/wronganswer/judgeproblem/
   // http://43.143.247.211:8001/wronganswer/judgeproblem/
+  console.log(data);
   axios
     .post(
-      store.state.behindip.onlineip + "/wronganswer/judgeproblem/",
+      `${store.state.behindip.onlineip}${store.state.behindip.submit_problem}`,
       JSON.stringify(data),
       config
     )
     .then((response) => {
+      if (!validateResponse(response)) {
+        // 服务端错误时需要跳转至home
+        alert("serve is error please report to developer");
+        return;
+      }
       // let info = localStorage.getItem("info");
-      data = response.data.json();
-      console.log(data);
-      if (data["state"] == 0) {
-        alert(data["mes"]);
-        console.log(data);
+      let payload = response.data.payload;
+      console.log(payload);
+      if (payload.state === 0) {
+        alert(payload.message);
+        console.log(payload);
+      } else {
+        router.push("/status");
       }
     })
     .catch((error) => {
       console.log(error);
     });
-  router.push("/status");
 };
+
+watch(
+  () => props.problemid,
+  (newVal, oldVal) => {
+    console.log(`problemid changed from ${oldVal} to ${newVal}`);
+  }
+);
 </script>
 <style>
 #head {
