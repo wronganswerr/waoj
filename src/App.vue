@@ -209,6 +209,8 @@ const chlicklogout = () => {
   /* height: 100%; */
   background-color: white;
   display: block;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
 }
 
 .no-underline {
