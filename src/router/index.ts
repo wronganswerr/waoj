@@ -50,6 +50,11 @@ const routes: Array<RouteRecordRaw> = [
     name: "chatroom",
     component: () => import("../views/ChatRoom.vue"),
   },
+  {
+    path: "/ranklist",
+    name: "ranklist",
+    component: () => import("../views/RankList.vue"),
+  },
 ];
 
 const router = createRouter({
