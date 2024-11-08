@@ -24,6 +24,9 @@
       <el-menu-item index="/chatroom">
         <router-link to="/chatroom" class="no-underline">ChatRoom</router-link>
       </el-menu-item>
+      <el-menu-item index="/ranklist">
+        <router-link to="/ranklist" class="no-underline">RankList</router-link>
+      </el-menu-item>
       <el-menu-item index="/addproblem" v-if="store.state.user.role > 0">
         <router-link to="/addproblem" class="no-underline"
           >Addproblem</router-link
@@ -206,6 +209,8 @@ const chlicklogout = () => {
   /* height: 100%; */
   background-color: white;
   display: block;
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
 }
 
 .no-underline {
