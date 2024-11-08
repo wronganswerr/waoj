@@ -2,9 +2,7 @@
   <div class="main">
     <div style="width: 70%">
       <h1>{{ profileData.name }}</h1>
-      <div>
-        
-      </div>
+      <div></div>
       <div class="echarts">
         <Echarts></Echarts>
       </div>
