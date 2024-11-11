@@ -7,11 +7,16 @@ import store from "./store";
 
 import mavonEditor from "mavon-editor";
 import "mavon-editor/dist/css/index.css";
+import VueNativeSock from "vue-native-websocket-vue3";
 const app = createApp(App);
 app.use(store);
 app.use(mavonEditor);
 app.use(ElementPlus);
 app.use(router);
 app.provide("store", store);
+
+// app.use(VueNativeSock, "ws://localhost:8000/ws/your_user_id", {
+//   format: "json",
+// });
 
 app.mount("#app");

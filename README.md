@@ -27,3 +27,4 @@ npm run lint
 ### Customize configuration
 
 See [Configuration Reference](https://cli.vuejs.org/config/).
+scp -r dist root@wongansweroj.online:/home/ojfront

@@ -27,7 +27,7 @@
             label="Problem"
             show-overflow-tooltip
           />
-          <el-table-column prop="user_id" label="who" show-overflow-tooltip />
+          <el-table-column prop="name" label="who" show-overflow-tooltip />
           <el-table-column prop="language" label="lang" />
           <el-table-column prop="verdict" label="Verdict" width="160" />
           <el-table-column
@@ -107,7 +107,7 @@ const get_status = () => {
       if (validateResponse(response)) {
         let payload = response.data.payload;
         statusset.value = payload.content;
-        // total.value =
+        total.value = payload.size;
       } else {
         alert();
       }
