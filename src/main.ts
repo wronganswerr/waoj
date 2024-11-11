@@ -13,16 +13,5 @@ app.use(store);
 app.use(mavonEditor);
 app.use(ElementPlus);
 app.use(router);
-app.use(VueNativeSock, "http://www.wongansweroj.online:8126/ws/ws", {
-  format: "json", // 默认值
-  reconnection: true, // 自动重连
-  reconnectionAttempts: 5, // 最大重连次数
-  reconnectionDelay: 3000, // 重连间隔时间
-});
 app.provide("store", store);
-
-// app.use(VueNativeSock, "ws://localhost:8000/ws/your_user_id", {
-//   format: "json",
-// });
-
 app.mount("#app");
