@@ -94,14 +94,15 @@
         <p v-else>{{ store.state.user.username }}</p>
         <!-- 你好 xxx -->
         <div>
-          <el-table :data="theprosta" style="width: 100%">
-            <el-table-column
-              prop="when"
-              label="when"
-              show-overflow-tooltip
-              min-width="100%"
-            />
-            <el-table-column prop="verdict" label="verdict" />
+          <el-table
+            :data="theprosta"
+            style="width: 100%; text-align: center"
+            :cell-style="cellstyle"
+            :header-cell-style="headerCellStyle"
+            border
+          >
+            <el-table-column prop="when" label="when" show-overflow-tooltip />
+            <el-table-column prop="verdict" label="Verdict" />
           </el-table>
         </div>
       </div>
@@ -148,7 +149,7 @@ onMounted(() => {
   let data = {
     problem_id: problem_id,
   };
-  console.log(data);
+  // console.log(data);
   // 这里的异步请求需要改成同步的
   axios
     .post(
@@ -175,7 +176,6 @@ onMounted(() => {
     .catch((error) => {
       console.log(error);
     });
-  console.log(store.state.user);
   if (store.state.user.role > 0) {
     let data = {
       problem_id: problem_id?.toString(),
@@ -198,6 +198,25 @@ onMounted(() => {
       });
   }
 });
+const cellstyle = ({ row, column }) => {
+  // 状态列字体颜色
+  // console.log(columnIndex);
+  if (column.label == "Verdict") {
+    // console.log(row.verdict);
+    if (row.verdict == "ACCEPT") {
+      return { color: "green", "font-weight": 800, textAlign: "center" };
+    } else {
+      return { color: "red", "font-weight": 800, textAlign: "center" };
+    }
+  } else {
+    return { textAlign: "center" };
+  }
+};
+const headerCellStyle = () => {
+  return {
+    textAlign: "center",
+  };
+};
 </script>
 <style>
 #title {
@@ -254,6 +273,7 @@ onMounted(() => {
   background-color: white;
   height: 600px;
   margin-top: 10px;
+  margin-right: 20px;
   text-align: center;
   overflow: auto;
 }

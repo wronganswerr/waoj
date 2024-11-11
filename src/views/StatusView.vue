@@ -29,7 +29,7 @@
           />
           <el-table-column prop="name" label="who" show-overflow-tooltip />
           <el-table-column prop="language" label="lang" />
-          <el-table-column prop="verdict" label="Verdict" width="160" />
+          <el-table-column prop="verdict" label="Verdict" width="320" />
           <el-table-column
             prop="message"
             label="Message"
@@ -80,7 +80,7 @@ const now_page = ref(1);
 const vis = ref(false);
 const code = ref();
 // const totalpage = ref();
-const page_size = ref<number>(10);
+const page_size = ref<number>(25);
 const user_self = ref<boolean>(false);
 
 const get_status = () => {
