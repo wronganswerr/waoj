@@ -140,7 +140,10 @@ onMounted(() => {
   down_problemid.value = String(problem_id);
   console.log(`problem_id ${down_problemid.value}`);
   let config = {
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${store.state.user.token}`,
+    },
   };
   let data = {
     problem_id: problem_id,
@@ -172,30 +175,27 @@ onMounted(() => {
     .catch((error) => {
       console.log(error);
     });
-
-  if (store.state.user.role > -1) {
+  console.log(store.state.user);
+  if (store.state.user.role > 0) {
     let data = {
-      user_id: store.state.user.user_id,
       problem_id: problem_id?.toString(),
     };
-    // axios
-    //   .post(
-    //     `${store.state.behindip.onlineip}${store.state.behindip.get_user_problem_status}`,
-    //     JSON.stringify(data),
-    //     config
-    //   )
-    //   .then((response) => {
-    //     if (validateResponse(response)) {
-    //       let content = response.data.content;
-    //       let payload = content.payload;
-    //       let sta = payload.solve_id_list; //array 取出solve的problem的id
-    //       // console.log(sta);
-    //       theprosta.value = sta;
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
+    axios
+      .post(
+        `${store.state.behindip.onlineip}${store.state.behindip.get_user_a_problem_status}`,
+        JSON.stringify(data),
+        config
+      )
+      .then((response) => {
+        if (validateResponse(response)) {
+          let payload = response.data.payload;
+          // 展示最近10条提交
+          theprosta.value = payload.content.slice(0, 10);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 });
 </script>

@@ -18,6 +18,7 @@ export interface BehindIpState {
   submit_problem: string;
   update_problem: string;
   ranklist: string;
+  get_user_a_problem_status: string;
 }
 
 const state: BehindIpState = {
@@ -38,6 +39,7 @@ const state: BehindIpState = {
   submit_problem: "/problem/submit_problem",
   update_problem: "/problem/update_problem",
   ranklist: "/status/user_rank_info",
+  get_user_a_problem_status: "/status/user_problem_status",
 };
 
 export default {
