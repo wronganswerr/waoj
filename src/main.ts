@@ -7,7 +7,6 @@ import store from "./store";
 
 import mavonEditor from "mavon-editor";
 import "mavon-editor/dist/css/index.css";
-import VueNativeSock from "vue-native-websocket-vue3";
 const app = createApp(App);
 app.use(store);
 app.use(mavonEditor);
