@@ -1,5 +1,5 @@
 // src/store/modules/socket.ts
-import { Module } from 'vuex';
+import { Module } from "vuex";
 
 interface State {
   ws: WebSocket | null;
@@ -57,19 +57,22 @@ const socketModule: Module<State, any> = {
   actions: {
     connection({ dispatch }, { url, token }: { url: string; token: string }) {
       if ("WebSocket" in window) {
-        dispatch('createWebSocket', { url, token });
+        dispatch("createWebSocket", { url, token });
       } else {
         console.log("您的浏览器不支持websocket通信");
       }
     },
-    createWebSocket({ commit, dispatch }, { url, token }: { url: string; token: string }) {
+    createWebSocket(
+      { commit, dispatch },
+      { url, token }: { url: string; token: string }
+    ) {
       try {
-        const ws = new WebSocket(url, token);
-        commit('SET_WS', ws);
-        dispatch('initWebSocket');
+        const ws = new WebSocket(url);
+        commit("SET_WS", ws);
+        dispatch("initWebSocket");
       } catch (e) {
         console.log("catch eeeee=", e);
-        dispatch('reConnection');
+        dispatch("reConnection");
       }
     },
     initWebSocket({ state, commit, dispatch }) {
@@ -78,51 +81,51 @@ const socketModule: Module<State, any> = {
       state.ws.onopen = () => {
         state.ws?.send("hello server");
         console.log("连接成功");
-        dispatch('heartCheck');
+        dispatch("heartCheck");
       };
 
       state.ws.onmessage = (event: MessageEvent) => {
-        console.log(event.data);
+        console.log(`收到服务端消息: ${event.data}`);
         let msg = event.data;
         if (msg.includes("{")) {
           msg = JSON.parse(msg);
         }
-        commit('SET_MSG', msg);
-        dispatch('heartCheck');
+        commit("SET_MSG", msg);
+        dispatch("heartCheck");
       };
 
       state.ws.onerror = () => {
         console.log("连接失败");
-        dispatch('reConnection');
+        dispatch("reConnection");
       };
 
       state.ws.onclose = () => {
         console.log("关闭连接");
         if (!state.handClose) {
-          dispatch('reConnection');
+          dispatch("reConnection");
         }
       };
     },
     clearTimer({ commit }) {
-      commit('CLEAR_TIMERS');
+      commit("CLEAR_TIMERS");
     },
     reConnection({ state, commit, dispatch }) {
       console.log("重新连接");
       if (state.lockReconnect) {
         return;
       }
-      commit('SET_LOCK_RECONNECT', true);
+      commit("SET_LOCK_RECONNECT", true);
 
       if (state.timerReconnect) {
         clearTimeout(state.timerReconnect);
       }
 
       const timer = setTimeout(() => {
-        dispatch('connection', { url: 'your_url', token: 'your_token' });
-        commit('SET_LOCK_RECONNECT', false);
+        dispatch("connection", { url: "your_url", token: "your_token" });
+        commit("SET_LOCK_RECONNECT", false);
       }, 5000);
 
-      commit('SET_TIMER_RECONNECT', timer);
+      commit("SET_TIMER_RECONNECT", timer);
     },
     heartCheck({ state, commit }) {
       console.log("监测心跳");
@@ -133,10 +136,10 @@ const socketModule: Module<State, any> = {
       const timer = setTimeout(() => {
         console.log("PING");
         state.ws?.send("PING");
-        commit('SET_LOCK_RECONNECT', false);
+        commit("SET_LOCK_RECONNECT", false);
       }, state.heartTimeOut);
 
-      commit('SET_TIMER_HEART', timer);
+      commit("SET_TIMER_HEART", timer);
     },
     sendMsg({ state }, data: any) {
       console.log("发送消息");
@@ -146,11 +149,11 @@ const socketModule: Module<State, any> = {
     },
     closeWs({ state, commit }) {
       console.log("手动关闭ws");
-      commit('SET_HAND_CLOSE', true);
-      commit('CLEAR_TIMERS');
+      commit("SET_HAND_CLOSE", true);
+      commit("CLEAR_TIMERS");
       state.ws?.close();
-    }
-  }
+    },
+  },
 };
 
 export default socketModule;
