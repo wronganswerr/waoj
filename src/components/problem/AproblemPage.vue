@@ -84,7 +84,7 @@
         <div></div>
       </div>
       <div>
-        <SubmitProblem :problemid="down_problemid" />
+        <SubmitProblem :problemid="down_problemid" :oj_form="oj_from" />
       </div>
     </div>
     <el-affix style="margin-left: 10px; width: 20%" :offset="60">
@@ -102,7 +102,11 @@
             border
           >
             <el-table-column prop="when" label="when" show-overflow-tooltip />
-            <el-table-column prop="verdict" label="Verdict" />
+            <el-table-column
+              prop="verdict"
+              label="Verdict"
+              show-overflow-tooltip
+            />
           </el-table>
         </div>
       </div>
@@ -131,6 +135,7 @@ const outputdescribe = ref("");
 const example = ref();
 const theprosta = ref();
 const store = useStore(); //store.state.user.username
+const oj_from = ref("waoj");
 // const text = ref("$a$");
 let problem_id = route.query.problem_id;
 // console.log(route.query.rid);
@@ -172,6 +177,7 @@ onMounted(() => {
       timelimit.value = payload.timelimit;
       memorylimit.value = payload.memorylimit;
       example.value = payload.example;
+      oj_from.value = payload.oj_from;
     })
     .catch((error) => {
       console.log(error);

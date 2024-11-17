@@ -21,7 +21,12 @@
           style="width: 100%"
           :cell-style="cellstyle"
         >
-          <el-table-column prop="when" label="when" min-width="100" />
+          <el-table-column
+            prop="when"
+            label="when"
+            min-width="100"
+            show-overflow-tooltip
+          />
           <el-table-column
             prop="problem_title"
             label="Problem"

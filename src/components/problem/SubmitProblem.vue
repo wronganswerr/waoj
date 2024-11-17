@@ -41,7 +41,7 @@ import { validateResponse } from "../../utils/utils";
 const code = ref("");
 const buts = ref(true);
 const lange = ref();
-const props = defineProps<{ problemid: string }>();
+const props = defineProps<{ problemid: string; oj_form: string }>();
 const store = useStore(); //store.state.user.username
 const router = useRouter(); //跳转至提交页面
 const options = ["cpp", "python"];
@@ -68,6 +68,10 @@ const submit = () => {
     return;
   }
 
+  if (props.oj_form != "waoj") {
+    alert("第三方OJ提交开发中。。。");
+    return;
+  }
   let config = {
     headers: {
       "Content-Type": "application/json",

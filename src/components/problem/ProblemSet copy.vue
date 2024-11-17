@@ -5,36 +5,46 @@
       <h1 style="margin-block-start: 0em">problem</h1>
       <div style="display: flex; margin-top: 20px; margin-left: 20px">
         <div
-          style="height: 25px; width: 25px; background-color: rgb(0, 114, 0)"
+          style="
+            height: 25px;
+            width: 25px;
+            background-color: rgb(142, 230, 142);
+          "
         ></div>
         <h4 style="margin-block-start: 0em">solve</h4>
       </div>
       <div style="display: flex; margin-top: 20px; margin-left: 20px">
-        <div
-          style="
-            height: 25px;
-            width: 25px;
-            background-color: rgb(221.7, 222.6, 224.4);
-          "
-        ></div>
+        <div style="height: 25px; width: 25px; background-color: #ecf5ff"></div>
         <h4 style="margin-block-start: 0em">unsolve</h4>
       </div>
     </div>
-    <div
-      style="
-        background-color: white;
-        height: 100%;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: center;
-      "
-    >
-      <div v-for="(i, index) in problem_list" :key="index" :class="i.solve">
-        <div class="inline" @click="looktopro(i.problem_id)">
-          {{ i.problem_title }}
-        </div>
+    <div style="background-color: white; height: 100%">
+      <!-- <el-scrollbar height="400px">
+        <p v-for="item in 20" :key="item" class="scrollbar-demo-item">
+          {{ item }}
+        </p>
+      </el-scrollbar> -->
+      <div>
+        <li v-for="(i, index) in problem_list" :key="index" :class="i.solve">
+          <div class="inline">{{ i.problem_title }}</div>
+          <div class="inline">
+            <el-button type="primary" @click="looktopro(i.problem_id)"
+              >Look</el-button
+            >
+            <!-- <router-link target="_blank" to="/aproblempage">look</router-link> -->
+          </div>
+          <!-- 只有当前用户为管理员时显示 -->
+          <div class="inline" v-if="store.state.user.role == 1">
+            <el-button type="primary" @click="changetopro(i.problem_id)"
+              >Change</el-button
+            >
+          </div>
+          <div class="inline" v-if="store.state.user.role == 1">
+            <el-button type="primary" @click="deletetopro(i.problem_id, index)"
+              >Delete</el-button
+            >
+          </div>
+        </li>
       </div>
     </div>
   </div>
@@ -43,27 +53,20 @@
 <script setup lang="ts">
 import { validateResponse } from "@/utils/utils";
 import axios from "axios";
-import { ref, onMounted, defineProps } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 const store = useStore(); //访问全局变量
 const problem_list = ref<ProblemInfo[]>([]);
 const problem_id_index_map = new Map<string, number>();
-// const route = useRoute();
 
-// const oj_name = route.query.oj_name;
-
-const props = defineProps<{ oj_name: string }>();
-console.log("Received problem ID:", props.oj_name);
 interface ProblemInfo {
   problem_id: string;
   problem_title: string;
   solve: string;
-  oj_from: string;
 }
 
 onMounted(() => {
-  console.log(props.oj_name);
   fetchData()
     .then(() => {
       console.log("fetch data finish");
@@ -102,18 +105,12 @@ const fetchData = async () => {
         console.log(payload_1);
         for (let i = 0; i < payload_1.content.length; i++) {
           let solve = "unsolve";
-          if (payload_1.content[i].oj_from == undefined) {
-            payload_1.content[i].oj_from = "waoj";
-          }
-          if (payload_1.content[i].oj_from == props.oj_name) {
-            problem_list.value.push({
-              problem_id: payload_1.content[i]._id,
-              problem_title: payload_1.content[i].problemtitle,
-              solve: solve,
-              oj_from: payload_1.content[i].oj_from,
-            });
-            problem_id_index_map.set(payload_1.content[i]._id, i);
-          }
+          problem_list.value.push({
+            problem_id: payload_1.content[i]._id,
+            problem_title: payload_1.content[i].problemtitle,
+            solve: solve,
+          });
+          problem_id_index_map.set(payload_1.content[i]._id, i);
         }
       }
     }
@@ -155,6 +152,51 @@ const looktopro = (problem_id: string) => {
     "_blank"
   );
 };
+// 重现写一个changeproblem页面传入rid,载入数据
+// 与addproblem类似
+const changetopro = (problem_id: string) => {
+  console.log("change");
+  window.open(
+    router.resolve({
+      path: "/changeproblem",
+      query: {
+        problem_id: problem_id,
+      },
+    }).href,
+    "_blank"
+  );
+  // router.push({ path: "/changeproblem", query: { rid: rid } });
+};
+
+const deletetopro = (problem_id: string, id: number) => {
+  let config = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${store.state.user.token}`,
+    },
+  };
+  let data = {
+    problem_id: problem_id,
+  };
+  // http://127.0.0.1:8001
+  // http://43.143.247.211:8001/
+  axios
+    .post(
+      `${store.state.behindip.onlineip}${store.state.behindip.delete_problem}`,
+      JSON.stringify(data),
+      config
+    )
+    .then((res) => {
+      console.log(res);
+      // 不刷新页面 更新组件
+      problem_list.value.splice(id, 1);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+
+  // const [result1, result2] = await Promise.all([response1, response2]);
+};
 </script>
 <style scoped>
 .bottom {
@@ -177,46 +219,28 @@ const looktopro = (problem_id: string) => {
   display: flex;
   align-items: center;
   /* justify-content: center; */
-  height: 100px;
-  width: 20%;
+  height: 50px;
   padding-left: 10px;
-  background: rgb(221.7, 222.6, 224.4);
+  background: var(--el-color-primary-light-9);
   margin: 10px;
-  color: #303133;
-  border: 1px solid #ccc;
-  border-radius: 8px;
+  color: var(--el-color-primary);
 }
 
 .beensolved {
   display: flex;
   align-items: center;
   /* justify-content: center; */
-  width: 20%;
-  height: 100px;
+  height: 50px;
   padding-left: 10px;
-  background-color: rgb(0, 114, 0);
+  background-color: rgb(142, 230, 142);
   margin: 10px;
   color: var(--el-color-primary);
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  color: rgb(0, 0, 0);
 }
 
 .inline {
-  width: 100%;
-  height: 100%;
-  /* margin-right: 20px;
-  margin-left: 20px; */
-  text-align: center; /* 水平居中对齐文本 */
-  display: flex;
-  align-items: center; /* 垂直居中对齐内容 */
-  justify-content: center; /* 水平居中对齐内容 */
-}
-
-.unsolve:hover {
-  background-color: rgb(0, 114, 0); /* 悬停时改变背景颜色 */
-  transform: scale(1.05); /* 悬停时稍微放大 */
-  color: rgb(0, 0, 0);
-  /* border-color: #007bff; 悬停时改变边框颜色 */
+  width: 25%;
+  margin-right: 20px;
+  margin-left: 20px;
+  align-items: center;
 }
 </style>

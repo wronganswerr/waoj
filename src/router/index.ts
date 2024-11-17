@@ -60,6 +60,12 @@ const routes: Array<RouteRecordRaw> = [
     name: "profile",
     component: () => import("../views/ProfileView.vue"),
   },
+  {
+    path: "/problem/problem/:oj_name",
+    name: "problem_set",
+    component: () => import("../components/problem/ProblemSet.vue"),
+    props: true,
+  },
 ];
 
 const router = createRouter({
