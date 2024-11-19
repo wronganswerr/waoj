@@ -205,7 +205,7 @@ const chlicklogout = () => {
   margin-top: 8px;
   /* width: 100%; */
   /* height: 80%; */
-  min-height: 95vh;
+  min-height: 90vh;
   /* height: 100%; */
   background-color: white;
   display: block;

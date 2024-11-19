@@ -31,22 +31,36 @@ const go_to_problem_set = (name: string) => {
 <style scoped>
 #bottom {
   text-align: center;
-  min-height: 100%;
+  /* height: 1000px; */
+  /* align-items: center; */
+  /* justify-content: center; */
   align-items: center;
+  height: 80vh;
 }
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 #ps {
   background-color: white;
   /* width: 1000px; */
   /* padding: 10px; */
-  /* height: 100%; */
+  height: 100%;
   display: flex;
-  align-items: center; /* 垂直居中对齐内容 */
-  justify-content: center; /* 水平居中对齐内容 */
+  align-items: center;
+  /* 垂直居中对齐内容 */
+  justify-content: center;
+  /* 水平居中对齐内容 */
   justify-content: space-evenly;
   align-content: space-around;
+  /* margin-top: 100px; */
 }
+
 .problem_set {
   width: 20%;
-  height: 400px;
+  height: 60%;
+  /* height: 50vh; */
 }
 </style>
