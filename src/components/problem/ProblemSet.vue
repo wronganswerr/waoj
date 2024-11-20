@@ -53,8 +53,7 @@ const problem_id_index_map = new Map<string, number>();
 
 // const oj_name = route.query.oj_name;
 
-const props = defineProps<{ oj_name: string }>();
-console.log("Received problem ID:", props.oj_name);
+const props = defineProps<{ oj_name: string; problem_total_number: number }>();
 interface ProblemInfo {
   problem_id: string;
   problem_title: string;
@@ -63,7 +62,7 @@ interface ProblemInfo {
 }
 
 onMounted(() => {
-  console.log(props.oj_name);
+  console.log(props);
   fetchData()
     .then(() => {
       console.log("fetch data finish");
@@ -207,15 +206,20 @@ const looktopro = (problem_id: string) => {
   height: 100%;
   /* margin-right: 20px;
   margin-left: 20px; */
-  text-align: center; /* 水平居中对齐文本 */
+  text-align: center;
+  /* 水平居中对齐文本 */
   display: flex;
-  align-items: center; /* 垂直居中对齐内容 */
-  justify-content: center; /* 水平居中对齐内容 */
+  align-items: center;
+  /* 垂直居中对齐内容 */
+  justify-content: center;
+  /* 水平居中对齐内容 */
 }
 
 .unsolve:hover {
-  background-color: rgb(0, 114, 0); /* 悬停时改变背景颜色 */
-  transform: scale(1.05); /* 悬停时稍微放大 */
+  background-color: rgb(0, 114, 0);
+  /* 悬停时改变背景颜色 */
+  transform: scale(1.05);
+  /* 悬停时稍微放大 */
   color: rgb(0, 0, 0);
   /* border-color: #007bff; 悬停时改变边框颜色 */
 }

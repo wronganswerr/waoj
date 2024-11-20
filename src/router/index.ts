@@ -61,7 +61,7 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/ProfileView.vue"),
   },
   {
-    path: "/problem/problem/:oj_name",
+    path: "/problem/problem/:oj_name/:problem_total_number",
     name: "problem_set",
     component: () => import("../components/problem/ProblemSet.vue"),
     props: true,
