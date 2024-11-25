@@ -1,4 +1,3 @@
-import { inject } from "vue";
 import { Store } from "vuex";
 
 export function validateResponse(response: any): boolean {

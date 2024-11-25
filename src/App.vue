@@ -5,32 +5,44 @@
         <p style="font-size: 20px; font-weight: 900; margin: 10px">WAOJ</p>
       </div>
       <el-menu-item index="/">
-        <router-link to="/" class="no-underline">Home</router-link>
+        <router-link to="/" class="no-underline"
+          ><strong> Home </strong>
+        </router-link>
       </el-menu-item>
       <el-menu-item index="/problem">
-        <router-link to="/problem" class="no-underline">Problem</router-link>
+        <router-link to="/problem" class="no-underline"
+          ><strong>Problem</strong>
+        </router-link>
       </el-menu-item>
       <el-menu-item index="/status">
-        <router-link to="/status" class="no-underline">Status</router-link>
+        <router-link to="/status" class="no-underline"
+          ><strong>Status</strong>
+        </router-link>
       </el-menu-item>
       <el-menu-item index="/contest">
-        <router-link to="/contest" class="no-underline">Contest</router-link>
+        <router-link to="/contest" class="no-underline">
+          <strong>Contest</strong>
+        </router-link>
       </el-menu-item>
       <el-menu-item index="/challenge">
-        <router-link to="/challenge" class="no-underline"
-          >Challenge</router-link
-        >
+        <router-link to="/challenge" class="no-underline">
+          <strong> Challenge</strong>
+        </router-link>
       </el-menu-item>
       <el-menu-item index="/chatroom">
-        <router-link to="/chatroom" class="no-underline">ChatRoom</router-link>
+        <router-link to="/chatroom" class="no-underline">
+          <strong>ChatRoom</strong>
+        </router-link>
       </el-menu-item>
       <el-menu-item index="/ranklist">
-        <router-link to="/ranklist" class="no-underline">RankList</router-link>
+        <router-link to="/ranklist" class="no-underline">
+          <strong>RankList</strong>
+        </router-link>
       </el-menu-item>
       <el-menu-item index="/addproblem" v-if="store.state.user.role > 0">
-        <router-link to="/addproblem" class="no-underline"
-          >Addproblem</router-link
-        >
+        <router-link to="/addproblem" class="no-underline">
+          <strong>Addproblem</strong>
+        </router-link>
       </el-menu-item>
       <!-- 控制组件渲染 来展示登录的用户 -->
       <div class="log" v-if="store.state.user.user_id == 0">
@@ -81,7 +93,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { createLogger, useStore } from "vuex";
+import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { ref, onMounted } from "vue";
 import axios from "axios";
@@ -203,6 +215,7 @@ const chlicklogout = () => {
 #buttom {
   /* position: relative; */
   margin-top: 8px;
+  margin-bottom: 8px;
   /* width: 100%; */
   /* height: 80%; */
   min-height: 90vh;

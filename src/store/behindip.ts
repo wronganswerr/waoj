@@ -22,7 +22,7 @@ export interface BehindIpState {
 }
 
 const state: BehindIpState = {
-  onlineip: "http://www.wongansweroj.online:8126",
+  onlineip: "https://www.wongansweroj.online:8126/api", //测试环境使用http
   localip: "http://127.0.0.1:8126",
   user_login: "/user/login",
   user_register: "/user/register",
