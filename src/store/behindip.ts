@@ -19,10 +19,11 @@ export interface BehindIpState {
   update_problem: string;
   ranklist: string;
   get_user_a_problem_status: string;
+  get_problem_number: string;
 }
 
 const state: BehindIpState = {
-  onlineip: "https://www.wongansweroj.online:8126/api", //测试环境使用http
+  onlineip: "https://www.wongansweroj.online:8126/api",
   localip: "http://127.0.0.1:8126",
   user_login: "/user/login",
   user_register: "/user/register",
@@ -40,6 +41,7 @@ const state: BehindIpState = {
   update_problem: "/problem/update_problem",
   ranklist: "/status/user_rank_info",
   get_user_a_problem_status: "/status/user_problem_status",
+  get_problem_number: "/problem/get_problem_number",
 };
 
 export default {

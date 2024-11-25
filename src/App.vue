@@ -111,7 +111,7 @@ router.afterEach((to) => {
 });
 
 onMounted(() => {
-  document.title = "WAOJ-think-code-accept";
+  document.title = "WAOJ-think-code-accept-(个人技术学习)";
   //组件挂载完后执行
   let info = localStorage.getItem("info"); //取出字符串
   console.log(info);

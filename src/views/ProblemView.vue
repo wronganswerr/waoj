@@ -4,15 +4,21 @@
     <h1>Problem Set</h1>
     <div id="ps">
       <el-card class="problem_set" @click="go_to_problem_set('waoj')">
-        <template #header>WAOJ problem set</template>
+        <template #header
+          >WAOJ problem set({{ oj_problem_number?.waoj }})</template
+        >
         <img src="../assets/waoj_logo.jpg" style="width: 100%" />
       </el-card>
       <el-card class="problem_set" @click="go_to_problem_set('codeforces')">
-        <template #header>codeforces problem set</template>
+        <template #header
+          >codeforces problem set({{ oj_problem_number?.codeforces }})</template
+        >
         <img src="../assets/cf_logo.png" style="width: 100%" />
       </el-card>
-      <el-card class="problem_set" @click="go_to_problem_set('atcoders')">
-        <template #header>atcoder problem set</template>
+      <el-card class="problem_set" @click="go_to_problem_set('atcoder')">
+        <template #header
+          >atcoder problem set({{ oj_problem_number?.atcoder }})</template
+        >
         <img src="../assets/atcoder_logo.png" style="width: 100%" />
       </el-card>
     </div>
@@ -20,12 +26,62 @@
 </template>
 
 <script setup lang="ts">
+import axios from "axios";
+import { useStore } from "vuex";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
+import { validateResponse } from "@/utils/utils";
 const router = useRouter();
+const store = useStore();
 
-const go_to_problem_set = (name: string) => {
-  console.log(name);
-  router.push({ name: "problem_set", params: { oj_name: name } });
+interface OjProblemNumber {
+  waoj: number;
+  codeforces: number;
+  atcoder: number;
+}
+
+const oj_problem_number = ref<OjProblemNumber>();
+let config = {
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${store.state.user.token}`,
+  },
+};
+
+onMounted(() => {
+  axios
+    .get(
+      `${store.state.behindip.onlineip}${store.state.behindip.get_problem_number}`,
+      config
+    )
+    .then((response) => {
+      if (validateResponse(response)) {
+        let content = response.data;
+        if (content.code != 0) {
+          if (content.code == 41001) {
+            console.log(content);
+          } else {
+            alert("serve error");
+          }
+          return;
+        } else {
+          let payload = content.payload;
+          oj_problem_number.value = payload.content[0];
+        }
+      }
+    });
+});
+
+const go_to_problem_set = (name: keyof OjProblemNumber) => {
+  if (oj_problem_number.value) {
+    router.push({
+      name: "problem_set",
+      params: {
+        oj_name: name,
+        problem_total_number: oj_problem_number.value[name],
+      },
+    });
+  }
 };
 </script>
 <style scoped>
