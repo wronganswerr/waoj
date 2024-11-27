@@ -2,14 +2,15 @@
   <div class="main">
     <div style="width: 70%">
       <h1>{{ profileData.name }}</h1>
-      <div></div>
       <div class="echarts">
         <Echarts></Echarts>
       </div>
     </div>
     <div
       style="
-        width: 30%;
+        height: 50%;
+        /* padding-top: 50%; */
+        /* width: 30%; */
         /* background-color: red; */
         padding: 10px;
         display: flex;
@@ -18,8 +19,8 @@
     >
       <div
         style="
-          max-width: 70%;
-          height: 70%;
+          /* width: 30%; */
+          /* height: 500px; */
           border: 1px solid #ccc;
           justify-content: center;
           align-items: center;
@@ -61,7 +62,7 @@
 </template>
 
 <script setup>
-import { reactive } from "vue";
+import { reactive, onMounted } from "vue";
 import Profile from "@/components/UserProfile.vue";
 import Echarts from "@/components/LineChart.vue";
 
@@ -73,6 +74,11 @@ const profileData = reactive({
   vjudge: "yrtwd",
   atcoder: "byh",
   luogu: "yrtwd_byh",
+});
+// 构建各个OJ的信息，然后传入 到子组件
+onMounted(() => {
+  profileData.name = "wronganswer";
+  profileData.codeforces = "wronganswer";
 });
 </script>
 
@@ -118,8 +124,7 @@ img {
   width: 90%;
   margin: 0px auto;
   margin-top: 40px;
-
-  /* position: absolute; */
-  /* bottom: 0; */
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 </style>

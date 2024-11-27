@@ -1,5 +1,7 @@
 <template>
-  <v-chart :option="chartOptions" style="height: 400px"></v-chart>
+  <div>
+    <v-chart :option="chartOptions" style="height: 400px"></v-chart>
+  </div>
 </template>
 
 <script setup>
@@ -26,7 +28,7 @@ use([
 
 const chartOptions = ref({
   title: {
-    text: "ECharts Line Chart",
+    text: "Solve Probelm",
   },
   tooltip: {
     trigger: "axis",

@@ -12,6 +12,16 @@
 <script setup>
 import { defineProps } from "vue";
 
+// const profileData = reactive({
+//   name: "wronganswer",
+//   niuke: "yrtwd",
+//   codeforces: "yrtwd",
+//   waoj: "yrtwd",
+//   vjudge: "yrtwd",
+//   atcoder: "byh",
+//   luogu: "yrtwd_byh",
+// });
+
 const props = defineProps({
   profile: {
     type: Object,

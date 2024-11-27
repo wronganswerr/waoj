@@ -52,9 +52,9 @@
         >
       </div>
       <div class="log" v-else>
-        <p style="font-size: 23px">
+        <el-link style="font-size: 23px" href="/#/profile">
           {{ store.state.user.name }}
-        </p>
+        </el-link>
         <el-button
           type="primary"
           plain
