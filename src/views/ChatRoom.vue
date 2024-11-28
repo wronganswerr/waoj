@@ -7,20 +7,29 @@
           {{ i }}
         </li>
       </div>
-      <div id="inputbox"></div>
+      <div id="inputbox">
+        <el-input
+          v-model="input_text"
+          style="width: 100%; height: 80%"
+          type="textarea"
+          placeholder="Please input"
+          :rows="3"
+        />
+        <div>
+          <button @click="sendMessage">Send Message</button>
+        </div>
+      </div>
     </div>
-    <button @click="connectWebSocket">Connect WebSocket</button>
-    <button @click="sendMessage">Send Message</button>
-    <button @click="closeWebSocket">Close WebSocket</button>
   </div>
 </template>
 <script setup lang="ts">
-import { ref, defineComponent, computed, watch } from "vue";
+import { ref, computed, watch } from "vue";
 import { useStore } from "vuex";
 
 const store = useStore();
 const message_list = ref<string[]>([]);
 const message = computed(() => store.state.socket.msg); // computed 自动跟踪响应式的依赖数据
+const input_text = ref<string>("");
 
 watch(message, (newMessage) => {
   if (newMessage) {
@@ -33,10 +42,9 @@ const connectWebSocket = () => {
   console.log(store.state.socket);
   if (store.state.socket.ws == null || store.state.socket.ws?.readyState == 3) {
     store.dispatch("socket/connection", {
-      url: `ws://www.wongansweroj.online:8126/ws/ws/${Math.floor(
+      url: `wss://www.wongansweroj.online:8126/api/ws/ws/${Math.floor(
         Math.random() * 101
       )}`,
-      token: "your-token", //不用
     });
   } else {
     console.log("socket existed");
@@ -44,8 +52,12 @@ const connectWebSocket = () => {
 };
 
 const sendMessage = () => {
-  const data = { type: "message", content: "Hello, WebSocket!" };
+  if (input_text.value == "") {
+    return;
+  }
+  const data = { type: 1, content: input_text.value };
   store.dispatch("socket/sendMsg", data);
+  input_text.value = "";
 };
 
 const closeWebSocket = () => {
@@ -82,5 +94,6 @@ const closeWebSocket = () => {
   padding: 10px;
   margin-top: 10px;
   background-color: gray;
+  text-align: center;
 }
 </style>

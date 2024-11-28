@@ -10,17 +10,19 @@ interface State {
   timerServerHeart: ReturnType<typeof setTimeout> | null;
   handClose: boolean;
   msg: string;
+  url: string;
 }
 
 const state: State = {
   ws: null,
-  heartTimeOut: 40000, // 监测心跳时间 40秒
+  heartTimeOut: 20000, // 监测心跳时间 40秒
   lockReconnect: false, // 避免重连
   timerReconnect: null,
   timerHeart: null,
   timerServerHeart: null,
   handClose: false,
   msg: "",
+  url: "",
 };
 
 const socketModule: Module<State, any> = {
@@ -32,6 +34,9 @@ const socketModule: Module<State, any> = {
     },
     SET_MSG(state, msg: string) {
       state.msg = msg;
+    },
+    SET_URL(state, url: string) {
+      state.url = url;
     },
     SET_LOCK_RECONNECT(state, lockReconnect: boolean) {
       state.lockReconnect = lockReconnect;
@@ -55,20 +60,19 @@ const socketModule: Module<State, any> = {
     },
   },
   actions: {
-    connection({ dispatch }, { url, token }: { url: string; token: string }) {
+    connection({ dispatch }, { url }: { url: string }) {
       if ("WebSocket" in window) {
-        dispatch("createWebSocket", { url, token });
+        dispatch("createWebSocket", { url });
       } else {
         console.log("您的浏览器不支持websocket通信");
       }
     },
-    createWebSocket(
-      { commit, dispatch },
-      { url, token }: { url: string; token: string }
-    ) {
+    createWebSocket({ commit, dispatch }, { url }: { url: string }) {
       try {
         const ws = new WebSocket(url);
         commit("SET_WS", ws);
+        commit("SET_URL", url);
+        console.log(state.ws);
         dispatch("initWebSocket");
       } catch (e) {
         console.log("catch eeeee=", e);
@@ -79,7 +83,6 @@ const socketModule: Module<State, any> = {
       if (!state.ws) return;
 
       state.ws.onopen = () => {
-        state.ws?.send("hello server");
         console.log("连接成功");
         dispatch("heartCheck");
       };
@@ -102,7 +105,7 @@ const socketModule: Module<State, any> = {
       state.ws.onclose = () => {
         console.log("关闭连接");
         if (!state.handClose) {
-          dispatch("reConnection");
+          // dispatch("reConnection");
         }
       };
     },
@@ -121,28 +124,38 @@ const socketModule: Module<State, any> = {
       }
 
       const timer = setTimeout(() => {
-        dispatch("connection", { url: "your_url", token: "your_token" });
+        dispatch("connection", { url: state.url });
         commit("SET_LOCK_RECONNECT", false);
-      }, 5000);
+      }, 2000);
 
       commit("SET_TIMER_RECONNECT", timer);
     },
-    heartCheck({ state, commit }) {
-      console.log("监测心跳");
+    heartCheck({ state, commit, dispatch }) {
+      console.log("HEART_BEAT");
       if (state.timerHeart) {
         clearTimeout(state.timerHeart);
       }
 
       const timer = setTimeout(() => {
         console.log("PING");
-        state.ws?.send("PING");
-        commit("SET_LOCK_RECONNECT", false);
+        if (state.ws?.readyState == 1) {
+          state.ws.send(
+            JSON.stringify({
+              type: 0,
+              content: "PING",
+            })
+          );
+          commit("SET_LOCK_RECONNECT", false);
+        } else {
+          console.log("PING 失败");
+        }
+        dispatch("heartCheck");
       }, state.heartTimeOut);
 
       commit("SET_TIMER_HEART", timer);
     },
     sendMsg({ state }, data: any) {
-      console.log("发送消息");
+      console.log("send_message");
       if (state.ws?.readyState === WebSocket.OPEN) {
         state.ws.send(JSON.stringify(data));
       }

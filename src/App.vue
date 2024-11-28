@@ -160,6 +160,13 @@ onMounted(() => {
               token: store.state.user.token,
             })
           );
+          // 建立 websocket 连接
+          console.log(user_info);
+          if (user_info.user_id > 0) {
+            store.dispatch("socket/connection", {
+              url: `wss://www.wongansweroj.online:8126/api/ws/ws/${user_info.user_id}`,
+            });
+          }
         }
       } else {
         store.dispatch("user/getuserinfo", {
