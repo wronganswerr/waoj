@@ -4,7 +4,23 @@
       
     </div> -->
     <div id="status">
-      <h1 style="margin-block-start: 0em; margin-block-end: 0.5em">Status</h1>
+      <div style="display: flex">
+        <h1
+          style="
+            margin-block-start: 0em;
+            margin-block-end: 0.5em;
+            margin-right: 20px;
+          "
+        >
+          Status
+        </h1>
+        <el-switch
+          v-model="only_my_self"
+          size="large"
+          active-text="只看自己的提交"
+          style="right: 0"
+        />
+      </div>
       <!-- #code
     # submituser
     # submitwhen
@@ -21,31 +37,26 @@
           style="width: 100%"
           :cell-style="cellstyle"
         >
-          <el-table-column
-            prop="when"
-            label="when"
-            min-width="100"
-            show-overflow-tooltip
-          />
-          <el-table-column
-            prop="problem_title"
-            label="Problem"
-            show-overflow-tooltip
-          />
-          <el-table-column prop="name" label="who" show-overflow-tooltip />
+          <el-table-column prop="when" label="when" min-width="100">
+            <template #default="scope">
+              <span>{{ formatDate(scope.row.when) }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="problem_title" label="Problem" />
+          <el-table-column prop="name" label="who" />
           <el-table-column prop="language" label="lang" />
-          <el-table-column prop="verdict" label="Verdict" width="320" />
-          <el-table-column
+          <el-table-column prop="verdict" label="Verdict" />
+          <!-- <el-table-column
             prop="message"
             label="Message"
             min-width="100"
             show-overflow-tooltip
-          />
-          <el-table-column prop="runtime" label="Time(ms)" />
-          <el-table-column prop="memory" label="Memory(KB)" />
+          /> -->
+          <!-- <el-table-column prop="runtime" label="Time(ms)" /> -->
+          <!-- <el-table-column prop="memory" label="Memory(KB)" /> -->
           <!-- <el-table-column prop="runmemort" label="Memory" /> -->
           <!-- 对话框显示代码 -->
-          <el-table-column label="Code">
+          <el-table-column label="Code" width="100">
             <template v-slot="scope">
               <el-button link type="primary" @click="lookcode(scope.$index)"
                 >Code</el-button
@@ -68,8 +79,18 @@
     </div>
   </div>
   <el-dialog v-model="vis" title="Code">
-    <!-- <p>{{ code }}</p> -->
-    <pre>{{ code }}</pre>
+    <el-table
+      :data="one_submition_detil"
+      border
+      style="width: 100%"
+      :cell-style="cellstyle"
+    >
+      <el-table-column prop="message" label="Message" min-width="100" />
+      <el-table-column prop="runtime" label="Time(ms)" />
+      <el-table-column prop="memory" label="Memory(KB)" />
+    </el-table>
+
+    <highlightjs :language="language" :code="code" />
   </el-dialog>
 </template>
 
@@ -84,17 +105,20 @@ const total = ref(0);
 const now_page = ref(1);
 const vis = ref(false);
 const code = ref();
+const language = ref();
 // const totalpage = ref();
 const page_size = ref<number>(25);
 const user_self = ref<boolean>(false);
-
+const one_submition_detil = ref();
+const only_my_self = ref<boolean>(false);
+let config = {
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${store.state.user.token}`,
+  },
+};
+let all_user_submition_list = [];
 const get_status = () => {
-  let config = {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${store.state.user.token}`,
-    },
-  };
   let data = {
     user_self: user_self.value,
     page_size: page_size.value,
@@ -112,6 +136,7 @@ const get_status = () => {
       if (validateResponse(response)) {
         let payload = response.data.payload;
         statusset.value = payload.content;
+        all_user_submition_list = payload.content;
         total.value = payload.size;
       } else {
         alert();
@@ -131,13 +156,52 @@ watch(now_page, (newpage) => {
   // console.log(now_page.value);
   get_status();
 });
+// watch(only_my_self, (new_value) => {
+//   if (new_value) {
+//   } else {
+//   }
+// });
 const lookcode = (id: number) => {
-  console.log(statusset.value[id].code);
+  console.log(statusset.value[id].hash_id);
+  console.log(statusset.value[id].language);
+  one_submition_detil.value = [];
+  one_submition_detil.value = [
+    {
+      message: statusset.value[id].message,
+      runtime: statusset.value[id].runtime,
+      memory: statusset.value[id].memory,
+    },
+  ];
   // 后端开放一个api请求url 返回文件
-  vis.value = true;
-  code.value = statusset.value[id].code;
+  axios
+    .post(
+      `${store.state.behindip.onlineip}${store.state.behindip.get_submition_code}`,
+      JSON.stringify({
+        hash_id: statusset.value[id].hash_id,
+      }),
+      config
+    )
+    .then((response) => {
+      // console.log(response.data);
+      if (validateResponse(response)) {
+        let payload = response.data.payload;
+        if (payload.status == "OK") {
+          language.value = `${statusset.value[id].language}`;
+          code.value = payload.code;
+        } else {
+          code.value = "unfind";
+        }
+        vis.value = true;
+      } else {
+        alert();
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
   // 对话框
 };
+
 const cellstyle = ({ row, column }) => {
   // 状态列字体颜色
   // console.log(columnIndex);
@@ -149,6 +213,9 @@ const cellstyle = ({ row, column }) => {
       return { color: "red", "font-weight": 800 };
     }
   }
+};
+const formatDate = (dateString) => {
+  return dateString.replace("T", " ");
 };
 </script>
 <style scoped>
