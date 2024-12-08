@@ -9,7 +9,7 @@ interface State {
   timerHeart: ReturnType<typeof setTimeout> | null;
   timerServerHeart: ReturnType<typeof setTimeout> | null;
   handClose: boolean;
-  msg: string;
+  msg: object | null;
   url: string;
 }
 
@@ -21,7 +21,7 @@ const state: State = {
   timerHeart: null,
   timerServerHeart: null,
   handClose: false,
-  msg: "",
+  msg: null,
   url: "",
 };
 
@@ -32,7 +32,7 @@ const socketModule: Module<State, any> = {
     SET_WS(state, ws: WebSocket) {
       state.ws = ws;
     },
-    SET_MSG(state, msg: string) {
+    SET_MSG(state, msg: object) {
       state.msg = msg;
     },
     SET_URL(state, url: string) {
@@ -91,8 +91,9 @@ const socketModule: Module<State, any> = {
         console.log(`收到服务端消息: ${event.data}`);
         let msg = event.data;
         if (msg.includes("{")) {
-          msg = JSON.parse(msg);
+          msg = JSON.parse(msg); //str -> obj
         }
+        // commit("SET_MSG", {}); // 通过监听实现
         commit("SET_MSG", msg);
         dispatch("heartCheck");
       };
@@ -138,6 +139,7 @@ const socketModule: Module<State, any> = {
 
       const timer = setTimeout(() => {
         console.log("PING");
+        console.log(state.ws);
         if (state.ws?.readyState == 1) {
           state.ws.send(
             JSON.stringify({
@@ -146,16 +148,17 @@ const socketModule: Module<State, any> = {
             })
           );
           commit("SET_LOCK_RECONNECT", false);
+          dispatch("heartCheck");
         } else {
           console.log("PING 失败");
+          dispatch("reConnection");
         }
-        dispatch("heartCheck");
       }, state.heartTimeOut);
 
       commit("SET_TIMER_HEART", timer);
     },
-    sendMsg({ state }, data: any) {
-      console.log("send_message");
+    sendMsg({ state }, data: string) {
+      console.log("send_string");
       if (state.ws?.readyState === WebSocket.OPEN) {
         state.ws.send(JSON.stringify(data));
       }

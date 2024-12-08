@@ -30,28 +30,43 @@
       >
     </div>
   </div>
+  <el-dialog v-model="submition_diglog_vis" title="SUBMITION">
+    <highlightjs :language="lange" :code="code" />
+  </el-dialog>
 </template>
 <script setup lang="ts">
 import { ref, defineProps, watch } from "vue";
 import axios from "axios";
 import { useStore } from "vuex";
-import { useRouter } from "vue-router";
 import { validateResponse } from "../../utils/utils";
 // import { checkTagEmits } from "element-plus";
 const code = ref("");
+const submition_diglog_code = ref<string>("");
 const buts = ref(true);
 const lange = ref();
 const props = defineProps<{ problemid: string; oj_form: string }>();
 const store = useStore(); //store.state.user.username
-const router = useRouter(); //跳转至提交页面
 const options = ["cpp", "python"];
+const submition_diglog_vis = ref<boolean>(false);
+const one_submition_detil = ref([]);
 // 内容为空时禁用
 watch(code, (newcode) => {
-  console.log(newcode);
   if (newcode != "" || newcode.length >= 5000) {
     buts.value = false;
   } else {
     buts.value = true;
+  }
+});
+
+function init_submition_diglog() {
+  console.log("hh");
+}
+
+watch(submition_diglog_vis, (new_value) => {
+  if (new_value) {
+    init_submition_diglog();
+  } else {
+    return;
   }
 });
 
@@ -71,56 +86,60 @@ const submit = () => {
   if (props.oj_form != "waoj") {
     alert("第三方OJ提交开发中。。。");
     return;
-  }
-  let config = {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${store.state.user.token}`,
-    },
-  };
+  } else {
+    let config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${store.state.user.token}`,
+      },
+    };
 
-  buts.value = true; //按钮置为不可用
+    buts.value = true; //按钮置为不可用
 
-  // problem_id: str
-  // code: str
-  // language: str
-  // online_oj_choose:str = 'waoj'
-  let data = {
-    code: code.value,
-    language: lange.value,
-    problem_id: props.problemid,
-    online_oj_choose: "waoj",
-  };
-  // console.log("submit");
-  // 发送axios请求
-  // http://127.0.0.1:8001/wronganswer/judgeproblem/
-  // http://43.143.247.211:8001/wronganswer/judgeproblem/
-  console.log(data);
-  axios
-    .post(
-      `${store.state.behindip.onlineip}${store.state.behindip.submit_problem}`,
-      JSON.stringify(data),
-      config
-    )
-    .then((response) => {
-      if (!validateResponse(response)) {
-        // 服务端错误时需要跳转至home
-        alert("serve is error please report to developer");
-        return;
-      }
-      // let info = localStorage.getItem("info");
-      let payload = response.data.payload;
-      console.log(payload);
-      if (payload.state === 0) {
-        alert(payload.message);
+    // problem_id: str
+    // code: str
+    // language: str
+    // online_oj_choose:str = 'waoj'
+    let data = {
+      code: code.value,
+      language: lange.value,
+      problem_id: props.problemid,
+      online_oj_choose: "waoj",
+    };
+    // console.log("submit");
+    // 发送axios请求
+    // http://127.0.0.1:8001/wronganswer/judgeproblem/
+    // http://43.143.247.211:8001/wronganswer/judgeproblem/
+    console.log(data);
+    axios
+      .post(
+        `${store.state.behindip.onlineip}${store.state.behindip.submit_problem}`,
+        JSON.stringify(data),
+        config
+      )
+      .then((response) => {
+        if (!validateResponse(response)) {
+          // 服务端错误时需要跳转至home
+          alert("serve is error please report to developer");
+          return;
+        }
+        // let info = localStorage.getItem("info");
+        let payload = response.data.payload;
         console.log(payload);
-      } else {
-        router.push("/status");
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+        if (payload.state === 0) {
+          alert(payload.message);
+          console.log(payload);
+        } else {
+          // router.push("/status");
+          submition_diglog_code.value = code.value;
+          code.value = "";
+          submition_diglog_vis.value = true;
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
 };
 
 watch(

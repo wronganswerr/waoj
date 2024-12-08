@@ -66,6 +66,12 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../components/problem/ProblemSet.vue"),
     props: true,
   },
+  {
+    path: "/problem/problem_manager",
+    name: "problem_manager",
+    component: () => import("../components/problem/ProblemSetManagePage.vue"),
+    props: true,
+  },
 ];
 
 const router = createRouter({

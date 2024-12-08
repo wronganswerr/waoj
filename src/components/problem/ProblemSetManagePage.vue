@@ -67,6 +67,10 @@ interface ProblemInfo {
 }
 
 onMounted(() => {
+  if (store.state.user.role != 1) {
+    router.push("home");
+    return;
+  }
   fetchData()
     .then(() => {
       console.log("fetch data finish");

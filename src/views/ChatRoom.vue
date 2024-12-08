@@ -23,7 +23,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 import { useStore } from "vuex";
 
 const store = useStore();
@@ -31,25 +31,22 @@ const message_list = ref<string[]>([]);
 const message = computed(() => store.state.socket.msg); // computed 自动跟踪响应式的依赖数据
 const input_text = ref<string>("");
 
-watch(message, (newMessage) => {
-  if (newMessage) {
-    message_list.value.push(newMessage);
-    console.log(message_list.value);
-  }
+onMounted(() => {
+  //绑定监听事件
+  window.addEventListener("keydown", keyDown);
 });
 
-const connectWebSocket = () => {
-  console.log(store.state.socket);
-  if (store.state.socket.ws == null || store.state.socket.ws?.readyState == 3) {
-    store.dispatch("socket/connection", {
-      url: `wss://www.wongansweroj.online:8126/api/ws/ws/${Math.floor(
-        Math.random() * 101
-      )}`,
-    });
-  } else {
-    console.log("socket existed");
+onUnmounted(() => {
+  //销毁事件
+  window.removeEventListener("keydown", keyDown, false);
+});
+
+watch(message, (newMessage) => {
+  if (newMessage.type === 1) {
+    message_list.value.push(newMessage.content);
   }
-};
+  console.log(message_list.value);
+});
 
 const sendMessage = () => {
   if (input_text.value == "") {
@@ -60,8 +57,10 @@ const sendMessage = () => {
   input_text.value = "";
 };
 
-const closeWebSocket = () => {
-  store.dispatch("socket/closeWs");
+const keyDown = (e) => {
+  if (e.keyCode == 13 || e.keyCode == 100) {
+    sendMessage();
+  }
 };
 </script>
 <style scoped>
