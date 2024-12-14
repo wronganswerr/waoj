@@ -197,16 +197,19 @@ const lookcode = (id: number) => {
 
 const cellstyle = ({ row, column }) => {
   // 状态列字体颜色
-  // console.log(columnIndex);
   if (column.label == "Verdict") {
-    // console.log(row.verdict);
     if (row.verdict == "ACCEPT") {
-      return { color: "green", "font-weight": 800 };
+      return { color: "green", "font-weight": 800, textAlign: "center" };
+    } else if (row.verdict == "WRONG_ANSWER") {
+      return { color: "red", "font-weight": 800, textAlign: "center" };
     } else {
-      return { color: "red", "font-weight": 800 };
+      return { color: "#909399", "font-weight": 800, textAlign: "center" };
     }
+  } else {
+    return { textAlign: "center" };
   }
 };
+
 const formatDate = (dateString) => {
   return dateString.replace("T", " ");
 };
