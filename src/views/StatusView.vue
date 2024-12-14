@@ -79,26 +79,23 @@
     </div>
   </div>
   <el-dialog v-model="vis" title="Code">
-    <el-table
-      :data="one_submition_detil"
-      border
-      style="width: 100%"
-      :cell-style="cellstyle"
-    >
-      <el-table-column prop="message" label="Message" min-width="100" />
-      <el-table-column prop="runtime" label="Time(ms)" />
-      <el-table-column prop="memory" label="Memory(KB)" />
-    </el-table>
-
-    <highlightjs :language="language" :code="code" />
+    <submission-page
+      v-if="vis"
+      :code="code"
+      :language="language"
+      :one_submition_detil="one_submition_detil"
+    />
   </el-dialog>
 </template>
 
 <script setup lang="ts">
+import SubmissionPage from "@/components/problem/SubmissionPage.vue";
 import { ref, onMounted, watch } from "vue";
 import axios from "axios";
 import { useStore } from "vuex";
 import { validateResponse } from "@/utils/utils";
+import { url } from "@/api";
+
 const store = useStore();
 const statusset = ref(); //向后端发送请求 只请求前10条信息
 const total = ref(0);
@@ -117,7 +114,7 @@ let config = {
     Authorization: `Bearer ${store.state.user.token}`,
   },
 };
-let all_user_submition_list = [];
+// let all_user_submition_list = [];
 const get_status = () => {
   let data = {
     user_self: user_self.value,
@@ -126,17 +123,13 @@ const get_status = () => {
   };
   console.log(data);
   axios
-    .post(
-      `${store.state.behindip.onlineip}${store.state.behindip.get_status}`,
-      JSON.stringify(data),
-      config
-    )
+    .post(url.GET_STATUS, JSON.stringify(data), config)
     .then((response) => {
       console.log(response.data);
       if (validateResponse(response)) {
         let payload = response.data.payload;
         statusset.value = payload.content;
-        all_user_submition_list = payload.content;
+        // all_user_submition_list = payload.content;
         total.value = payload.size;
       } else {
         alert();
@@ -170,12 +163,12 @@ const lookcode = (id: number) => {
       message: statusset.value[id].message,
       runtime: statusset.value[id].runtime,
       memory: statusset.value[id].memory,
+      verdict: statusset.value[id].verdict,
     },
   ];
-  // 后端开放一个api请求url 返回文件
   axios
     .post(
-      `${store.state.behindip.onlineip}${store.state.behindip.get_submition_code}`,
+      url.GET_SUBMISSION_CODE,
       JSON.stringify({
         hash_id: statusset.value[id].hash_id,
       }),

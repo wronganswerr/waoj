@@ -217,6 +217,7 @@ import router from "@/router";
 import { validateResponse } from "@/utils/utils";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
+import { url } from "@/api";
 // import vue_markdown from "vue-markdown";
 const store = useStore(); //访问全局变量
 const dialogFormVisible = ref(false);
@@ -281,11 +282,7 @@ onMounted(() => {
   };
   console.log(data);
   axios
-    .post(
-      `${store.state.behindip.onlineip}${store.state.behindip.get_problem_detile}`,
-      JSON.stringify(data),
-      config
-    )
+    .post(url.GET_PROBLEM_DETAIL, JSON.stringify(data), config)
     .then((response) => {
       if (!validateResponse(response)) {
         // 服务端错误时需要跳转至home
@@ -426,11 +423,7 @@ const update_problem = () => {
   console.log(problem);
 
   axios
-    .post(
-      `${store.state.behindip.onlineip}${store.state.behindip.update_problem}`,
-      JSON.stringify(problem),
-      config
-    )
+    .post(url.UPDATE_PROBLEM, JSON.stringify(problem), config)
     .then((response) => {
       // console.log(response);
       if (validateResponse(response)) {

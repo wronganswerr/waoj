@@ -51,6 +51,7 @@
 </template>
 
 <script setup lang="ts">
+import { url } from "@/api";
 import { validateResponse } from "@/utils/utils";
 import axios from "axios";
 import { ref, onMounted } from "vue";
@@ -88,14 +89,8 @@ const fetchData = async () => {
         Authorization: `Bearer ${store.state.user.token}`,
       },
     };
-    const all_problem_request = axios.get(
-      `${store.state.behindip.onlineip}${store.state.behindip.get_all_problem}`,
-      config
-    );
-    const user_problem_request = axios.get(
-      `${store.state.behindip.onlineip}${store.state.behindip.get_user_problem_status}`,
-      config
-    );
+    const all_problem_request = axios.get(url.GET_ALL_PROBLEM, config);
+    const user_problem_request = axios.get(url.GET_USER_PROBLEM_STATUS, config);
 
     // 使用 Promise.all 等待两个请求都完成
     let result_1, result_2, payload_1, payload_2;
@@ -182,14 +177,8 @@ const deletetopro = (problem_id: string, id: number) => {
   let data = {
     problem_id: problem_id,
   };
-  // http://127.0.0.1:8001
-  // http://43.143.247.211:8001/
   axios
-    .post(
-      `${store.state.behindip.onlineip}${store.state.behindip.delete_problem}`,
-      JSON.stringify(data),
-      config
-    )
+    .post(url.DELETE_PROBLEM, JSON.stringify(data), config)
     .then((res) => {
       console.log(res);
       // 不刷新页面 更新组件

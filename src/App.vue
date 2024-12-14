@@ -100,7 +100,7 @@ import axios from "axios";
 import LoGin from "./components/loginpage/LoGin.vue";
 import ReGister from "./components/loginpage/ReGister.vue";
 import { clear_local_user_info, validateResponse } from "./utils/utils";
-
+import { url } from "./api";
 const dialogTableVisiblelogin = ref(false);
 const dialogTableVisibleregister = ref(false);
 const store = useStore(); //访问全局变量
@@ -114,7 +114,6 @@ onMounted(() => {
   document.title = "WAOJ-think-code-accept-(个人技术学习)";
   //组件挂载完后执行
   let info = localStorage.getItem("info"); //取出字符串
-  console.log(info);
   if (info == null) return;
   // 发送请求验证token
   store.dispatch("user/getuserinfo", JSON.parse(info as string));
@@ -126,7 +125,7 @@ onMounted(() => {
   };
   axios
     .post(
-      `${store.state.behindip.onlineip}${store.state.behindip.check_token}`,
+      url.CHECK_TOKEN,
       JSON.stringify({
         user_id: store.state.user.user_id,
       }),
@@ -164,7 +163,7 @@ onMounted(() => {
           console.log(user_info);
           if (user_info.user_id > 0) {
             store.dispatch("socket/connection", {
-              url: `wss://www.wongansweroj.online:8126/api/ws/ws/${user_info.user_id}`,
+              url: `wss://${url.WS}/${user_info.user_id}`,
             });
           }
         }
@@ -203,7 +202,7 @@ const chlicklogout = () => {
 };
 // console.log(store.state.user.name);
 </script>
-<style>
+<style scoped>
 .log {
   /* margin: 14px 12px 10px 10px; */
   padding: 12px;

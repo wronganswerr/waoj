@@ -8,15 +8,8 @@ import store from "./store";
 import mavonEditor from "mavon-editor";
 import "mavon-editor/dist/css/index.css";
 
-import hljs from "highlight.js";
-// import "highlight.js/styles/github.css";
-// import "highlight.js/lib/common";
-// import "highlight.js/styles/atom-one-dark.css";
-// import "highlight.js/styles/github.css";
-import "highlight.js/styles/default.css";
-// import "highlight.js/styles/dark.css";
-// import "highlight.js/styles/monokai.css";
 import hljsVuePlugin from "@highlightjs/vue-plugin";
+// import "highlight.js/styles/stackoverflow-light.css";
 
 const app = createApp(App);
 app.use(store);
@@ -42,13 +35,13 @@ app.provide("store", store);
 //     );
 //   },
 // });
-app.directive("highlight", {
-  mounted(el) {
-    const blocks = el.querySelectorAll("pre code");
-    blocks.forEach((block) => {
-      hljs.highlightElement(block);
-    });
-  },
-});
+// app.directive("highlight", {
+//   mounted(el) {
+//     const blocks = el.querySelectorAll("pre code");
+//     blocks.forEach((block) => {
+//       hljs.highlightElement(block);
+//     });
+//   },
+// });
 app.use(hljsVuePlugin);
 app.mount("#app");

@@ -41,6 +41,7 @@
 </template>
 
 <script setup lang="ts">
+import { url } from "@/api";
 import { validateResponse } from "@/utils/utils";
 import axios from "axios";
 import { ref, onMounted, defineProps } from "vue";
@@ -80,14 +81,8 @@ const fetchData = async () => {
         Authorization: `Bearer ${store.state.user.token}`,
       },
     };
-    const all_problem_request = axios.get(
-      `${store.state.behindip.onlineip}${store.state.behindip.get_all_problem}`,
-      config
-    );
-    const user_problem_request = axios.get(
-      `${store.state.behindip.onlineip}${store.state.behindip.get_user_problem_status}`,
-      config
-    );
+    const all_problem_request = axios.get(url.GET_ALL_PROBLEM, config);
+    const user_problem_request = axios.get(url.GET_USER_PROBLEM_STATUS, config);
 
     // 使用 Promise.all 等待两个请求都完成
     let result_1, result_2, payload_1, payload_2;

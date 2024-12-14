@@ -34,8 +34,8 @@
 import { ref } from "vue";
 import axios from "axios";
 import { useStore } from "vuex";
-import { validateResponse, anotherUtilityFunction } from "../../utils/utils";
-
+import { validateResponse } from "../../utils/utils";
+import { url } from "@/api";
 const accout = ref<number>();
 const password = ref<string>();
 const store = useStore();
@@ -57,11 +57,7 @@ const chlicklogin = () => {
   };
   console.log(data);
   axios
-    .post(
-      `${store.state.behindip.onlineip}${store.state.behindip.user_login}`,
-      JSON.stringify(data),
-      config
-    )
+    .post(url.USER_LOGIN, JSON.stringify(data), config)
     .then((response) => {
       console.log(response);
       if (validateResponse(response)) {

@@ -45,8 +45,8 @@
 import { ref } from "vue";
 import axios from "axios";
 import { useStore } from "vuex";
-import { validateResponse, anotherUtilityFunction } from "../../utils/utils";
-import { vLoading } from "element-plus";
+import { validateResponse } from "../../utils/utils";
+import { url } from "@/api";
 const accout = ref<string>("");
 const password = ref<string>("");
 const phone_number = ref<string>("");
@@ -87,12 +87,6 @@ const check_data = () => {
 };
 
 const chlick = () => {
-  //获取用户名和密码,请求服务器登录
-  // console.log(accout.value);
-  // console.log(password.value);
-  // axios.defaults.baseURL = "/proxy_url";
-  //http://43.143.247.211:8001/ 服务器公网IP 带端口号
-  //http://127.0.0.1:8001/
   let config = {
     headers: { "Content-Type": "application/json" },
   };
@@ -106,11 +100,7 @@ const chlick = () => {
     phone_number: phone_number.value,
   };
   axios
-    .post(
-      `${store.state.behindip.onlineip}${store.state.behindip.user_register}`,
-      JSON.stringify(data),
-      config
-    )
+    .post(url.USER_REGISTER, JSON.stringify(data), config)
     .then((response) => {
       if (!validateResponse(response)) {
         return;

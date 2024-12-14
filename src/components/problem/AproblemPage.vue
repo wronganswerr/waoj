@@ -84,7 +84,11 @@
         <div></div>
       </div>
       <div>
-        <SubmitProblem :problemid="down_problemid" :oj_form="oj_from" />
+        <SubmitProblem
+          :problemid="down_problemid"
+          :oj_form="oj_from"
+          @childEvent="handleChildEvent"
+        />
       </div>
     </div>
     <el-affix style="margin-left: 10px; width: 20%" :offset="60">
@@ -101,17 +105,26 @@
             :header-cell-style="headerCellStyle"
             border
           >
-            <el-table-column prop="when" label="when" show-overflow-tooltip />
-            <el-table-column
-              prop="verdict"
-              label="Verdict"
-              show-overflow-tooltip
-            />
+            <el-table-column prop="verdict" label="Verdict">
+              <template v-slot="scope">
+                <a @click="lookcode(scope.$index)">
+                  {{ scope.row.verdict }}
+                </a>
+              </template>
+            </el-table-column>
           </el-table>
         </div>
       </div>
     </el-affix>
   </div>
+  <el-dialog v-model="vis" title="Submission">
+    <SubmissionPage
+      v-if="vis"
+      :code="code"
+      :language="language"
+      :one_submition_detil="one_submition_detil"
+    />
+  </el-dialog>
 </template>
 <script setup lang="ts">
 import { useRoute } from "vue-router";
@@ -119,9 +132,10 @@ import { ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import axios from "axios";
 import SubmitProblem from "@/components/problem/SubmitProblem.vue";
-import { validateResponse, anotherUtilityFunction } from "../../utils/utils";
+import { validateResponse } from "../../utils/utils";
 import router from "@/router";
-import { da } from "element-plus/es/locale";
+import { url } from "@/api";
+import SubmissionPage from "./SubmissionPage.vue";
 
 // 父组件向子组件传参？路由跳转时传参
 const route = useRoute();
@@ -142,26 +156,27 @@ let problem_id = route.query.problem_id;
 
 const down_problemid = ref("1");
 
+const language = ref();
+const vis = ref(false);
+const code = ref(`cout<<"WELCOME TO WAOJ"<<"\\n"`);
+const one_submition_detil = ref();
+
+let config = {
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${store.state.user.token}`,
+  },
+};
+
 onMounted(() => {
   down_problemid.value = String(problem_id);
   console.log(`problem_id ${down_problemid.value}`);
-  let config = {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${store.state.user.token}`,
-    },
-  };
+
   let data = {
     problem_id: problem_id,
   };
-  // console.log(data);
-  // 这里的异步请求需要改成同步的
   axios
-    .post(
-      `${store.state.behindip.onlineip}${store.state.behindip.get_problem_detile}`,
-      JSON.stringify(data),
-      config
-    )
+    .post(url.GET_PROBLEM_DETAIL, JSON.stringify(data), config)
     .then((response) => {
       if (!validateResponse(response)) {
         // 服务端错误时需要跳转至home
@@ -169,7 +184,6 @@ onMounted(() => {
         return;
       }
       let payload = response.data.payload;
-      console.log(payload);
       problemtitle.value = payload.problemtitle;
       problemmain.value = payload.problemmain;
       inputdescribe.value = payload.inputdescribe;
@@ -187,15 +201,12 @@ onMounted(() => {
       problem_id: problem_id?.toString(),
     };
     axios
-      .post(
-        `${store.state.behindip.onlineip}${store.state.behindip.get_user_a_problem_status}`,
-        JSON.stringify(data),
-        config
-      )
+      .post(url.GET_USER_A_PROBLEM_STATUS, JSON.stringify(data), config)
       .then((response) => {
         if (validateResponse(response)) {
           let payload = response.data.payload;
           // 展示最近10条提交
+          console.log(payload.content.slice(0, 10));
           theprosta.value = payload.content.slice(0, 10);
         }
       })
@@ -223,8 +234,55 @@ const headerCellStyle = () => {
     textAlign: "center",
   };
 };
+
+function handleChildEvent(message) {
+  theprosta.value.unshift(...message);
+  if (theprosta.value.length > 10) {
+    theprosta.value = theprosta.value.slice(0, 10);
+  }
+}
+
+const lookcode = (id: number) => {
+  console.log(theprosta.value[id].hash_id);
+  console.log(theprosta.value[id].language);
+  one_submition_detil.value = [
+    {
+      message: theprosta.value[id].message,
+      runtime: theprosta.value[id].runtime,
+      memory: theprosta.value[id].memory,
+      verdict: theprosta.value[id].verdict,
+    },
+  ];
+  axios
+    .post(
+      url.GET_SUBMISSION_CODE,
+      JSON.stringify({
+        hash_id: theprosta.value[id].hash_id,
+      }),
+      config
+    )
+    .then((response) => {
+      // console.log(response.data);
+      if (validateResponse(response)) {
+        let payload = response.data.payload;
+        if (payload.status == "OK") {
+          language.value = `${theprosta.value[id].language}`;
+          code.value = payload.code;
+        } else {
+          code.value = "unfind";
+        }
+        vis.value = true;
+      } else {
+        alert();
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  // 对话框
+};
 </script>
-<style>
+<style scoped>
 #title {
   margin: 10px;
   background-color: white;
@@ -282,5 +340,9 @@ const headerCellStyle = () => {
   margin-right: 20px;
   text-align: center;
   overflow: auto;
+}
+a:hover {
+  color: black; /* 更改为你想要的颜色 */
+  text-decoration: none; /* 去掉下划线 */
 }
 </style>

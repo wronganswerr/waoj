@@ -11,13 +11,13 @@
 // src/store/index.ts
 import { createStore } from "vuex";
 import user from "./user";
-import behindip from "./behindip";
 import socketModule from "./websock";
 
-export default createStore({
+const store = createStore({
   modules: {
-    user,
-    behindip,
+    user: user,
     socket: socketModule,
   },
 });
+
+export default store;

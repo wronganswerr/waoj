@@ -10,7 +10,6 @@
 </template>
 <script setup lang="ts">
 import { onMounted } from "vue";
-import axios from "axios";
 onMounted(() => {
   // 向后端请求信息 userid 索引是否能加快数据库的检索？
 });

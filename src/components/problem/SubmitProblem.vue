@@ -31,24 +31,36 @@
     </div>
   </div>
   <el-dialog v-model="submition_diglog_vis" title="SUBMITION">
-    <highlightjs :language="lange" :code="code" />
+    <SubmissionPage
+      v-if="submition_diglog_vis"
+      :language="lange"
+      :code="submition_diglog_code"
+      :one_submition_detil="one_submition_detil"
+    />
   </el-dialog>
 </template>
 <script setup lang="ts">
+import SubmissionPage from "./SubmissionPage.vue";
+import { SubmitionInfo } from "./SubmissionPage.vue";
 import { ref, defineProps, watch } from "vue";
 import axios from "axios";
 import { useStore } from "vuex";
 import { validateResponse } from "../../utils/utils";
-// import { checkTagEmits } from "element-plus";
+import { url } from "@/api";
+import { defineEmits } from "vue";
+
+const emit = defineEmits(["childEvent"]);
+
 const code = ref("");
 const submition_diglog_code = ref<string>("");
-const buts = ref(true);
-const lange = ref();
+const buts = ref(false);
+const lange = ref("cpp");
 const props = defineProps<{ problemid: string; oj_form: string }>();
 const store = useStore(); //store.state.user.username
 const options = ["cpp", "python"];
 const submition_diglog_vis = ref<boolean>(false);
-const one_submition_detil = ref([]);
+const one_submition_detil = ref<Array<SubmitionInfo>>([]);
+
 // 内容为空时禁用
 watch(code, (newcode) => {
   if (newcode != "" || newcode.length >= 5000) {
@@ -58,23 +70,15 @@ watch(code, (newcode) => {
   }
 });
 
-function init_submition_diglog() {
-  console.log("hh");
-}
-
-watch(submition_diglog_vis, (new_value) => {
-  if (new_value) {
-    init_submition_diglog();
-  } else {
-    return;
-  }
-});
-
 function check_user(): boolean {
   if (store.state.user.role === 0) {
     return false;
   }
   return true;
+}
+
+function sendMessageToParent(message) {
+  emit("childEvent", message);
 }
 
 const submit = () => {
@@ -96,41 +100,42 @@ const submit = () => {
 
     buts.value = true; //按钮置为不可用
 
-    // problem_id: str
-    // code: str
-    // language: str
-    // online_oj_choose:str = 'waoj'
     let data = {
       code: code.value,
       language: lange.value,
       problem_id: props.problemid,
       online_oj_choose: "waoj",
     };
-    // console.log("submit");
-    // 发送axios请求
-    // http://127.0.0.1:8001/wronganswer/judgeproblem/
-    // http://43.143.247.211:8001/wronganswer/judgeproblem/
-    console.log(data);
+
+    submition_diglog_code.value = code.value;
     axios
-      .post(
-        `${store.state.behindip.onlineip}${store.state.behindip.submit_problem}`,
-        JSON.stringify(data),
-        config
-      )
+      .post(url.SUBMIT_PROBLEM, JSON.stringify(data), config)
       .then((response) => {
         if (!validateResponse(response)) {
           // 服务端错误时需要跳转至home
           alert("serve is error please report to developer");
           return;
         }
-        // let info = localStorage.getItem("info");
         let payload = response.data.payload;
-        console.log(payload);
         if (payload.state === 0) {
           alert(payload.message);
-          console.log(payload);
         } else {
           // router.push("/status");
+          let message_obj = JSON.parse(payload.message);
+          console.log(message_obj);
+          console.log(message_obj.hash_id);
+
+          one_submition_detil.value = [
+            {
+              message: message_obj.message,
+              runtime: 0,
+              memory: 0,
+              verdict: message_obj.verdict,
+              hash_id: message_obj.hash_id,
+            },
+          ];
+          console.log(one_submition_detil.value);
+          sendMessageToParent(one_submition_detil.value);
           submition_diglog_code.value = code.value;
           code.value = "";
           submition_diglog_vis.value = true;
@@ -149,7 +154,7 @@ watch(
   }
 );
 </script>
-<style>
+<style scoped>
 #head {
   margin-bottom: 10px;
   display: flex;

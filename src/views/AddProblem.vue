@@ -217,6 +217,7 @@ import { ElLoading } from "element-plus";
 import router from "@/router";
 import { validateResponse } from "@/utils/utils";
 import { useStore } from "vuex";
+import { url } from "@/api";
 // import vue_markdown from "vue-markdown";
 const store = useStore(); //访问全局变量
 const dialogFormVisible = ref(false);
@@ -388,11 +389,7 @@ const addprobelm = () => {
   });
 
   axios
-    .post(
-      `${store.state.behindip.onlineip}${store.state.behindip.add_problem}`,
-      JSON.stringify(problem),
-      config
-    )
+    .post(url.ADD_PROBLEM, JSON.stringify(problem), config)
     .then((response) => {
       // console.log(response);
       if (validateResponse(response)) {

@@ -54,12 +54,11 @@
 <script>
 import { ref, computed, onMounted } from "vue";
 import axios from "axios";
-import { useStore } from "vuex";
+import { url } from "@/api";
 
 export default {
   name: "RankingList",
   setup() {
-    const store = useStore();
     const data = ref([]);
     const sortKey = ref("rating");
     const sortOrder = ref("descending");
@@ -76,9 +75,7 @@ export default {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${store.state.behindip.onlineip}${store.state.behindip.ranklist}`
-        );
+        const response = await axios.get(url.RANKLIST);
         data.value = response.data.payload.content;
       } catch (error) {
         console.error("Failed to fetch data:", error);

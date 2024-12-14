@@ -31,6 +31,7 @@ import { useStore } from "vuex";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { validateResponse } from "@/utils/utils";
+import { url } from "@/api";
 const router = useRouter();
 const store = useStore();
 
@@ -49,27 +50,22 @@ let config = {
 };
 
 onMounted(() => {
-  axios
-    .get(
-      `${store.state.behindip.onlineip}${store.state.behindip.get_problem_number}`,
-      config
-    )
-    .then((response) => {
-      if (validateResponse(response)) {
-        let content = response.data;
-        if (content.code != 0) {
-          if (content.code == 41001) {
-            console.log(content);
-          } else {
-            alert("serve error");
-          }
-          return;
+  axios.get(url.GET_PROBLEM_NUMBER, config).then((response) => {
+    if (validateResponse(response)) {
+      let content = response.data;
+      if (content.code != 0) {
+        if (content.code == 41001) {
+          console.log(content);
         } else {
-          let payload = content.payload;
-          oj_problem_number.value = payload.content[0];
+          alert("serve error");
         }
+        return;
+      } else {
+        let payload = content.payload;
+        oj_problem_number.value = payload.content[0];
       }
-    });
+    }
+  });
 });
 
 const go_to_problem_set = (name: keyof OjProblemNumber) => {
