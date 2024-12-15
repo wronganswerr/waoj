@@ -31,9 +31,10 @@ const routes: Array<RouteRecordRaw> = [
     component: () => import("../views/ConTest.vue"),
   },
   {
-    path: "/aproblempage",
+    path: "/aproblempage/:problem_id",
     name: "aproblempage",
     component: () => import("../components/problem/AproblemPage.vue"),
+    props: true,
   },
   {
     path: "/changeproblem",

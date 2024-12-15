@@ -78,7 +78,7 @@
       </div>
     </div>
   </div>
-  <el-dialog v-model="vis" title="Code">
+  <el-dialog v-model="vis" title="Submission">
     <submission-page
       v-if="vis"
       :code="code"
@@ -235,21 +235,5 @@ const formatDate = (dateString) => {
   margin-right: 10px;
   margin-left: 10px;
   align-items: center;
-}
-pre {
-  font-family: micsoft yahei;
-  font-size: 15px;
-  color: black;
-  /*定义宽度*/
-  /*背景色*/
-  /*pre文字自动换行*/
-  white-space: pre-wrap;
-  white-space: -moz-pre-wrap;
-  white-space: -pre-wrap;
-  white-space: -o-pre-wrap;
-  /*长单词换行下一行*/
-  word-wrap: break-word;
-  /*两端对齐，最后一样右对齐*/
-  text-align: justify;
 }
 </style>

@@ -18,6 +18,7 @@
           :defaultOpen="'preview'"
           :editable="false"
           :toolbarsFlag="false"
+          codeStyle="androidstudio"
         >
         </mavon-editor>
       </div>
@@ -38,6 +39,7 @@
           :defaultOpen="'preview'"
           :editable="false"
           :toolbarsFlag="false"
+          codeStyle="androidstudio"
         >
         </mavon-editor>
       </div>
@@ -58,6 +60,7 @@
           :defaultOpen="'preview'"
           :editable="false"
           :toolbarsFlag="false"
+          codeStyle="androidstudio"
         >
         </mavon-editor>
       </div>
@@ -118,7 +121,7 @@
     </el-affix>
   </div>
   <el-dialog v-model="vis" title="Submission">
-    <SubmissionPage
+    <submission-page
       v-if="vis"
       :code="code"
       :language="language"
@@ -127,8 +130,7 @@
   </el-dialog>
 </template>
 <script setup lang="ts">
-import { useRoute } from "vue-router";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, defineProps } from "vue";
 import { useStore } from "vuex";
 import axios from "axios";
 import SubmitProblem from "@/components/problem/SubmitProblem.vue";
@@ -138,7 +140,7 @@ import { url } from "@/api";
 import SubmissionPage from "./SubmissionPage.vue";
 
 // 父组件向子组件传参？路由跳转时传参
-const route = useRoute();
+// const route = useRoute();
 
 const problemtitle = ref("");
 const problemmain = ref("");
@@ -151,8 +153,9 @@ const theprosta = ref();
 const store = useStore(); //store.state.user.username
 const oj_from = ref("waoj");
 // const text = ref("$a$");
-let problem_id = route.query.problem_id;
+// let problem_id = route.query.problem_id;
 // console.log(route.query.rid);
+const props = defineProps<{ problem_id: string }>();
 
 const down_problemid = ref("1");
 
@@ -169,11 +172,10 @@ let config = {
 };
 
 onMounted(() => {
-  down_problemid.value = String(problem_id);
-  console.log(`problem_id ${down_problemid.value}`);
-
+  down_problemid.value = props.problem_id;
+  // console.log(`problem_id ${down_problemid.value}`);
   let data = {
-    problem_id: problem_id,
+    problem_id: down_problemid.value,
   };
   axios
     .post(url.GET_PROBLEM_DETAIL, JSON.stringify(data), config)
@@ -198,7 +200,7 @@ onMounted(() => {
     });
   if (store.state.user.role > 0) {
     let data = {
-      problem_id: problem_id?.toString(),
+      problem_id: down_problemid.value?.toString(),
     };
     axios
       .post(url.GET_USER_A_PROBLEM_STATUS, JSON.stringify(data), config)

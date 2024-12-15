@@ -139,15 +139,22 @@ const fetchData = async () => {
 
 const router = useRouter();
 const looktopro = (problem_id: string) => {
-  window.open(
-    router.resolve({
-      path: "/aproblempage",
-      query: {
-        problem_id: problem_id,
-      },
-    }).href,
-    "_blank"
-  );
+  // window.open(
+  //   router.resolve({
+  //     path: "/aproblempage",
+  //     query: {
+  //       problem_id: problem_id,
+  //     },
+  //   }).href,
+  //   "_blank"
+  // );
+  console.log(problem_id);
+  router.push({
+    name: "aproblempage",
+    params: {
+      problem_id: problem_id,
+    },
+  });
 };
 </script>
 <style scoped>

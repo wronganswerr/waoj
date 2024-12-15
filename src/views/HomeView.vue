@@ -9,7 +9,8 @@ import { onMounted, ref } from "vue";
 
 const url = ref("");
 onMounted(async () => {
-  url.value = require("../assets/" + "1.jpg");
+  url.value =
+    "https://lhc-blog-use.oss-cn-beijing.aliyuncs.com/blog/2023202412142327834.png";
 });
 </script>
 <style scoped>

@@ -27,8 +27,9 @@
 
 <script setup lang="ts">
 import { ref, defineProps, onMounted, computed, watch } from "vue";
-import "highlight.js/styles/default.css";
 import hljsVuePlugin from "@highlightjs/vue-plugin";
+import "highlight.js/styles/androidstudio.css";
+
 import { useStore } from "vuex";
 const y_one_submition_detil = ref<SubmitionInfo[]>([]);
 const language = ref<string>("");
