@@ -7,6 +7,7 @@ export const url = {
   CHECK_TOKEN: `${BASE_URL}/user/check_token`,
   UPDATE_USER_INFO: `${BASE_URL}/user/update_user_info`,
   GET_ALL_PROBLEM: `${BASE_URL}/problem/get_all_problem_id`,
+  GET_PROBLEM_TITEL: `${BASE_URL}/problem/get_problem_title`,
   GET_PROBLEM_DETAIL: `${BASE_URL}/problem/get_problem_detile`,
   GET_USER_PROBLEM_STATUS: `${BASE_URL}/problem/get_user_problem_status`,
   DELETE_PROBLEM: `${BASE_URL}/problem/delete_problem`,

@@ -267,8 +267,9 @@ const exoutput = ref("");
 let exampletmp = new Array(0);
 
 onMounted(() => {
-  if (store.state.user.role != 1) {
-    // 非管理员 跳转路由
+  if (store.state.user.role == 0) {
+    // 未登录 跳转路由
+    alert("先登录哦~");
     router.push("/");
   }
 });

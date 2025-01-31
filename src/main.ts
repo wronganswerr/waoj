@@ -8,6 +8,7 @@ import store from "./store";
 import hljs from "highlight.js/lib/core";
 import javascript from "highlight.js/lib/languages/javascript";
 import cpp from "highlight.js/lib/languages/cpp";
+import java from "highlight.js/lib/languages/java";
 import python from "highlight.js/lib/languages/python";
 import hljsVuePlugin from "@highlightjs/vue-plugin";
 
@@ -17,6 +18,7 @@ import "mavon-editor/dist/css/index.css";
 hljs.registerLanguage("javascript", javascript);
 hljs.registerLanguage("cpp", cpp);
 hljs.registerLanguage("python", python);
+hljs.registerLanguage("java", java);
 
 const app = createApp(App);
 app.use(store);

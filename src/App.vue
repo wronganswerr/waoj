@@ -39,7 +39,7 @@
           <strong>RankList</strong>
         </router-link>
       </el-menu-item>
-      <el-menu-item index="/addproblem" v-if="store.state.user.role === 1">
+      <el-menu-item index="/addproblem">
         <router-link to="/addproblem" class="no-underline">
           <strong>Addproblem</strong>
         </router-link>
