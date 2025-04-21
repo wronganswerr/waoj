@@ -50,6 +50,7 @@ let config = {
 };
 
 onMounted(() => {
+  console.log(url.GET_PROBLEM_NUMBER);
   axios.get(url.GET_PROBLEM_NUMBER, config).then((response) => {
     if (validateResponse(response)) {
       let content = response.data;
