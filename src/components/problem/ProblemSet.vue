@@ -209,7 +209,7 @@ const fetchData = async () => {
     try {
       result_2 = await user_problem_request;
     } catch (error) {
-      console.log(`all_problem_request ${error}`);
+      console.log(`user_problem_request ${error}`);
     } finally {
       if (validateResponse(result_2)) {
         payload_2 = result_2.data.payload;
