@@ -113,6 +113,15 @@ router.afterEach((to) => {
 onMounted(() => {
   document.title = "WAOJ-think-code-accept-(个人技术学习)";
   //组件挂载完后执行
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = "/katex/katex.min.css";
+  document.head.appendChild(link);
+
+  const script = document.createElement("script");
+  script.src = "/katex/katex.min.js";
+  document.body.appendChild(script);
+
   let info = localStorage.getItem("info"); //取出字符串
   if (info == null) return;
   // 发送请求验证token
